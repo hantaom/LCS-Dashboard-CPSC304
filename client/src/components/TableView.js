@@ -32,10 +32,8 @@ render()
                                 {
                                     Header: "Assists (Total)"
                                 }
-                            ]
-                        },
-                        {
-                            columns: [
+                                ,
+
                                 {
                                     Header: "Kill Participation",
                                     accessor: "kp"
@@ -52,6 +50,9 @@ render()
                                 },
                                 {
                                     Header: "Games Played"
+                                },
+                                {
+                                    Header: "Rating"
                                 }
                             ]
                         }
