@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import TableView from "./components/TableView";
 
 class App extends Component {
   // Initialize state
@@ -22,6 +23,7 @@ class App extends Component {
 
     return (
       <div className="App">
+        <h1> LCS Dashboard </h1>
         {/* Render the passwords if we have them */}
         {passwords.length ? (
           <div>
@@ -56,6 +58,7 @@ class App extends Component {
             </button>
           </div>
         )}
+        <TableView/>
       </div>
     );
   }

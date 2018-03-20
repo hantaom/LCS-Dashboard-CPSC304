@@ -3,16 +3,16 @@ const path = require('path');
 const generatePassword = require('password-generator');
 const mysql = require('mysql');
 
-const con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "123"
-});
-
-con.connect(function(err) {
-  if (err) throw err;
-  console.log("connected!");
-});
+// const con = mysql.createConnection({
+//     host: "localhost",
+//     user: "root",
+//     password: "123"
+// });
+//
+// con.connect(function(err) {
+//   if (err) throw err;
+//   console.log("connected!");
+// });
 
 const app = express();
 
