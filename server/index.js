@@ -1,46 +1,44 @@
 const express = require('express');
 const path = require('path');
 const generatePassword = require('password-generator');
-const mysql = require('mysql');
+const pg = require('pg');
+const connectionString = process.env.DATABASE_URL || 'postgres://wiji:isaiah@localhost:5432/lcs';
 
-// const con = mysql.createConnection({
-//     host: "localhost",
-//     user: "root",
-//     password: "123"
+const client = new pg.Client(connectionString);
+client.connect();
+const query = client.query('SELECT * FROM items;', (err, res)=> {
+    if (err) throw err;
+    console.log("holy crap it connected");
+    console.log(JSON.stringify(res));
+});
+
+// const app = express();
+//
+// // Serve static files from the React app
+// app.use(express.static(path.join(__dirname, '/../client/build')));
+//
+// // Put all API endpoints under '/api'
+// app.get('/api/passwords', (req, res) => {
+//   const count = 5;
+//
+//   // Generate some passwords
+//   const passwords = Array.from(Array(count).keys()).map(i =>
+//     generatePassword(12, false)
+//   );
+//
+//   // Return them as json
+//   res.json(passwords);
+//
+//   console.log(`Sent ${count} passwords`);
 // });
 //
-// con.connect(function(err) {
-//   if (err) throw err;
-//   console.log("connected!");
+// // The "catchall" handler: for any request that doesn't
+// // match one above, send back React's index.html file.
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname+'/../client/build/index.html'));
 // });
-
-const app = express();
-
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, '/../client/build')));
-
-// Put all API endpoints under '/api'
-app.get('/api/passwords', (req, res) => {
-  const count = 5;
-
-  // Generate some passwords
-  const passwords = Array.from(Array(count).keys()).map(i =>
-    generatePassword(12, false)
-  );
-
-  // Return them as json
-  res.json(passwords);
-
-  console.log(`Sent ${count} passwords`);
-});
-
-// The "catchall" handler: for any request that doesn't
-// match one above, send back React's index.html file.
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname+'/../client/build/index.html'));
-});
-
-const port = process.env.PORT || 5000;
-app.listen(port);
-
-console.log(`Password generator listening on ${port}`);
+//
+// const port = process.env.PORT || 5000;
+// app.listen(port);
+//
+// console.log(`Password generator listening on ${port}`);
