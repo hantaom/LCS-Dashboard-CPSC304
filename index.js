@@ -54,6 +54,7 @@ client.query('SELECT * FROM PLAYERS;', (err, res) => {
   }
   // console.log(JSON.stringify(queryResults));
   client.end();
+}
 
 // let qh = new QueryHandler(client);
 // qh.getAndParsePlayerStats();
