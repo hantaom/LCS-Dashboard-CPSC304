@@ -4,11 +4,14 @@ import TableView from "./components/TableView";
 
 class App extends Component {
   // Initialize state
-  state = { passwords: [] }
+  // state = { passwords: []}
+  state = { queryResults: []}
+  
 
   // Fetch passwords after first mount
   componentDidMount() {
-    this.getPasswords();
+    // this.getPasswords();
+    this.getQueryResults();
   }
 
   getPasswords = () => {
@@ -18,42 +21,51 @@ class App extends Component {
       .then(passwords => this.setState({ passwords }));
   }
 
+  // Get the results of the query
+  getQueryResults = () => {
+    // Get the passwords and store them in state
+    fetch('/api/query')
+      .then(res => res.json())
+      .then(queryResults => this.setState({ queryResults }));
+  }
+
   render() {
-    const { passwords } = this.state;
+    // const { passwords } = this.state;
+    const { queryResults } = this.state;
 
     return (
       <div className="App">
         <h1> LCS Dashboard </h1>
         {/* Render the passwords if we have them */}
-        {passwords.length ? (
+        {queryResults.length ? (
           <div>
-            <h1>5 Passwords.</h1>
-            <ul className="passwords">
+            <h1>Results</h1>
+            <ul className="queryResults">
               {/*
                 Generally it's bad to use "index" as a key.
                 It's ok for this example because there will always
                 be the same number of passwords, and they never
                 change positions in the array.
               */}
-              {passwords.map((password, index) =>
+              {queryResults.map((result, index) =>
                 <li key={index}>
-                  {password}
+                  {result}
                 </li>
               )}
             </ul>
             <button
               className="more"
-              onClick={this.getPasswords}>
+              onClick={this.getQueryResults}>
               Get More
             </button>
           </div>
         ) : (
           // Render a helpful message otherwise
           <div>
-            <h1>No passwords :(</h1>
+            <h1>No results :(</h1>
             <button
               className="more"
-              onClick={this.getPasswords}>
+              onClick={this.getQueryResults}>
               Try Again?
             </button>
           </div>
