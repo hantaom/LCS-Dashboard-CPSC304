@@ -1,5 +1,5 @@
 create table players (
-	pl_name vacchar(30),
+	pl_name varchar(30),
 	position varchar(10),
 	team_name varchar(30) references team,
 	rating int,
@@ -7,18 +7,18 @@ create table players (
 );
 create table champion (
 	ch_name varchar(30) primary key,
-	win_rate double,
-	pick_rate double,
-	ban_rate double
+	win_rate float,
+	pick_rate float,
+	ban_rate doufloatble
 );
 create table game (
 	game_id varchar(50),
 	team_red varchar(30) references team,
 	team_blue varchar(30) references team,
-	time long not null,
+	time int not null,
 	result char(1),
-	duration long,
-	patch double,
+	duration int,
+	patch float,
 	primary key (game_id),
 	unique (team_red, team_blue, time)
 );
@@ -46,12 +46,12 @@ create table player_stats (
 	games_played int,
 	cs_per_min int,
 	assists int,
-	kda double,
+	kda float,
 	minutes_played int,
 	cs_total int,
 	kills int,
 	deaths int,
-	kill_participation double,
+	kill_participation float,
 	primary key (pl_name),
 );
 create table team_stats (
