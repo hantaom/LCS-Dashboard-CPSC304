@@ -27,41 +27,16 @@ class App extends Component {
     return (
       <div className="App">
         <h1> LCS Dashboard - NEW CHANGE!!!!!! </h1>
-        {/* Render the passwords if we have them */}
-        {queryResults.length ? (
           <div>
-            <h1>Results</h1>
-            <ul className="queryResults">
-              {/*
-                Generally it's bad to use "index" as a key.
-                It's ok for this example because there will always
-                be the same number of passwords, and they never
-                change positions in the array.
-              */}
-              {queryResults.map((result, index) =>
-                <li key={index}>
-                  {result}
-                </li>
-              )}
-            </ul>
+            <h1>LCS Dashboard</h1>
             <button
               className="more"
               onClick={this.getQueryResults}>
-              Get More
+              See Stats
             </button>
-          </div>
-        ) : (
-          // Render a helpful message otherwise
-          <div>
-            <h1>No results :(</h1>
-            <button
-              className="more"
-              onClick={this.getQueryResults}>
-              Try Again?
-            </button>
+            <TableView/>
           </div>
         )}
-        <TableView/>
       </div>
     );
   }
