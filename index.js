@@ -131,7 +131,7 @@ app.use(express.static(path.join(__dirname, '/../client/build')));
 // });
 
 // Query endpoint to send the query results
-app.get('/api/passswords', (req, res) => {
+app.get('/api/passwords', (req, res) => {
   console.log(JSON.stringify(queryResults));
   res.json(queryResults);
   console.log("Query Results sent");

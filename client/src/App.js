@@ -14,12 +14,12 @@ class App extends Component {
     this.getQueryResults();
   }
 
-  getPasswords = () => {
-    // Get the passwords and store them in state
-    fetch('/api/passwords')
-      .then(res => res.json())
-      .then(passwords => this.setState({ passwords }));
-  }
+  // getPasswords = () => {
+  //   // Get the passwords and store them in state
+  //   fetch('/api/passwords')
+  //     .then(res => res.json())
+  //     .then(passwords => this.setState({ passwords }));
+  // }
 
   // Get the results of the query
   getQueryResults = () => {
