@@ -16,17 +16,18 @@ const QueryHandler = require('./query.js');
 
 // Hantao PostgreSQL code
 // ######################################################################################################
-// const connectionString = process.env.DATABASE_URL || 'postgres://hantao:Password1@localhost:5432/lcs';
-// console.log(connectionString);
-// const pg = require('pg');
-// const client = new pg.Client(connectionString);
+// const myConnectionString = process.env.DATABASE_URL || 'postgres://hantao:Password1@localhost:5432/mylocaldb';
+// console.log(myConnectionString);
+// const { Client } = require('pg');
+// const client = new Client({
+//   connectionString: myConnectionString
+// });
 // client.connect();
 // // console.log(client.log);
 // let queryResults = [];
 // client.query('SELECT * FROM PLAYERS;', (err, res) => {
 //   if (err) throw err;
 //   for (let row of res.rows) {
-//     // console.log(JSON.stringify(row));
 //     queryResults.push(row["pl_name"]);
 //   }
 //   // console.log(JSON.stringify(queryResults));
@@ -39,8 +40,7 @@ const QueryHandler = require('./query.js');
 const { Client } = require('pg');
 
 const client = new Client({
-  connectionString: process.env.DATABASE_URL || 'postgres://opiryfbynhdawy:54d7d93eb3d8ca33e4365c05e38cb263c0cfaa4a6c1e9481c535e3fd8f4ec01e@ec2-54-235-146-51.compute-1.amazonaws.com:5432/d9tqp550p8taqi',
-  ssl: true,
+  connectionString: process.env.DATABASE_URL || 'postgres://opiryfbynhdawy:54d7d93eb3d8ca33e4365c05e38cb263c0cfaa4a6c1e9481c535e3fd8f4ec01e@ec2-54-235-146-51.compute-1.amazonaws.com:5432/d9tqp550p8taqi'
 });
 
 client.connect();
@@ -111,8 +111,8 @@ client.query('SELECT * FROM PLAYERS;', (err, res) => {
 const app = express();
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '/../client/build')));
-//app.use(express.static(__dirname + '/public'));
+//app.use(express.static(path.join(__dirname, '/../client/build')));
+app.use(express.static(__dirname + '/public'));
 
 // Put all API endpoints under '/api'
 // app.get('/api/passwords', (req, res) => {
@@ -140,7 +140,7 @@ app.get('/api/query', (req, res) => {
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {
-  res.send("NOT FOUND");
+  res.sendFile(path.join(__dirname+'/client/build/index.html'));
 });
 
 const port = process.env.PORT || 5000;
