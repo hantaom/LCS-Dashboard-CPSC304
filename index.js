@@ -40,9 +40,9 @@ const QueryHandler = require('./query.js');
 const { Client } = require('pg');
 
 const client = new Client({
-  connectionString: process.env.DATABASE_URL || 'postgres://opiryfbynhdawy:54d7d93eb3d8ca33e4365c05e38cb263c0cfaa4a6c1e9481c535e3fd8f4ec01e@ec2-54-235-146-51.compute-1.amazonaws.com:5432/d9tqp550p8taqi'
+  connectionString: process.env.DATABASE_URL || 'postgres://opiryfbynhdawy:54d7d93eb3d8ca33e4365c05e38cb263c0cfaa4a6c1e9481c535e3fd8f4ec01e@ec2-54-235-146-51.compute-1.amazonaws.com:5432/d9tqp550p8taqi',
+  ssl: true
 });
-
 client.connect();
 
 let queryResults = [];
@@ -133,7 +133,7 @@ app.use(express.static(__dirname + '/public'));
 // Query endpoint to send the query results
 app.get('/api/query', (req, res) => {
   console.log(JSON.stringify(queryResults));
-  res.json(queryResults);
+  res.send(queryResults);
   console.log("Query Results sent");
 });
 

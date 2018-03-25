@@ -16,12 +16,13 @@ class App extends Component {
     // Get the query results
     fetch('/api/query')
       .then(res => res.json())
-      .then(queryResults => this.setState({ queryResults }));
+      .then(queryResults => this.setState({ queryResults }))
   }
 
   render() {
     // const { passwords } = this.state;
     const { queryResults } = this.state;
+    console.log(queryResults);
 
     return (
       <div className="App">
