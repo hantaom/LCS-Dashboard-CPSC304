@@ -23,7 +23,6 @@ class App extends Component {
     // const { passwords } = this.state;
     const { queryResults } = this.state;
     console.log(queryResults);
-
     return (
       <div className="App">
         <h1> LCS Dashboard - NEW CHANGE!!!!!! </h1>
@@ -31,7 +30,8 @@ class App extends Component {
             <h1>LCS Dashboard</h1>
             <button
               className="more"
-              onClick={this.getQueryResults}>
+              onClick={this.getQueryResults}
+              >
               See Stats
             </button>
             <TableView/>

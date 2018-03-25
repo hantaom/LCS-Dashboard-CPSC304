@@ -6,13 +6,16 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.1",
-    "react-table": "^6.8.0"
+    "react-table": "^6.8.0",
+    "rimraf": "^2.6.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "clean": "rimraf public/bundle.*",
+    "postinstall": "yarn run clean && yarn run build"
   },
   "proxy": "http://localhost:5000"
 }
