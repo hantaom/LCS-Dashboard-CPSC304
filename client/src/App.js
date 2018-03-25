@@ -35,7 +35,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        <h1> LCS Dashboard </h1>
+        <h1> LCS Dashboard - NEW CHANGE!!!!!! </h1>
         {/* Render the passwords if we have them */}
         {queryResults.length ? (
           <div>

@@ -115,20 +115,20 @@ const app = express();
 app.use(express.static(__dirname + '/public'));
 
 // Put all API endpoints under '/api'
-app.get('/api/passwords', (req, res) => {
-  const count = 5;
+// app.get('/api/passwords', (req, res) => {
+//   const count = 5;
 
-  // Generate some passwords
-  const passwords = Array.from(Array(count).keys()).map(i =>
-    generatePassword(12, false)
-  );
+//   // Generate some passwords
+//   const passwords = Array.from(Array(count).keys()).map(i =>
+//     generatePassword(12, false)
+//   );
 
-  console.log(JSON.stringify(passwords));
-  // Return them as json
-  res.json(passwords);
+//   console.log(JSON.stringify(passwords));
+//   // Return them as json
+//   res.json(passwords);
 
-  console.log(`Sent ${count} passwords`);
-});
+//   console.log(`Sent ${count} passwords`);
+// });
 
 // Query endpoint to send the query results
 app.get('/api/query', (req, res) => {
