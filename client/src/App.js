@@ -4,26 +4,16 @@ import TableView from "./components/TableView";
 
 class App extends Component {
   // Initialize state
-  // state = { passwords: []}
   state = { queryResults: []}
-  
 
-  // Fetch passwords after first mount
+  // Fetch Query Results
   componentDidMount() {
-    // this.getPasswords();
     this.getQueryResults();
   }
 
-  // getPasswords = () => {
-  //   // Get the passwords and store them in state
-  //   fetch('/api/passwords')
-  //     .then(res => res.json())
-  //     .then(passwords => this.setState({ passwords }));
-  // }
-
   // Get the results of the query
   getQueryResults = () => {
-    // Get the passwords and store them in state
+    // Get the query results
     fetch('/api/query')
       .then(res => res.json())
       .then(queryResults => this.setState({ queryResults }));
