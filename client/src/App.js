@@ -62,7 +62,6 @@ class App extends Component {
             </button>
             <Selection/>
           </div>
-        )}
       </div>
     );
   }
