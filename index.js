@@ -16,45 +16,24 @@ const QueryHandler = require('./query.js');
 
 // Hantao PostgreSQL code
 // ######################################################################################################
-// const myConnectionString = process.env.DATABASE_URL || 'postgres://hantao:Password1@localhost:5432/mylocaldb';
-// console.log(myConnectionString);
-// const { Client } = require('pg');
-// const client = new Client({
-//   connectionString: myConnectionString
-// });
-// client.connect();
-// // console.log(client.log);
-// let queryResults = [];
-// client.query('SELECT * FROM PLAYERS;', (err, res) => {
-//   if (err) throw err;
-//   for (let row of res.rows) {
-//     queryResults.push(row["pl_name"]);
-//   }
-//   // console.log(JSON.stringify(queryResults));
-//   client.end();
-// });
-// ######################################################################################################
-
-// Heroku PostgreSQL code
-// ######################################################################################################
+const myConnectionString = process.env.DATABASE_URL || 'postgres://hantao:Password1@localhost:5432/demodb';
+console.log(myConnectionString);
 const { Client } = require('pg');
-
 const client = new Client({
-  connectionString: process.env.DATABASE_URL || 'postgres://opiryfbynhdawy:54d7d93eb3d8ca33e4365c05e38cb263c0cfaa4a6c1e9481c535e3fd8f4ec01e@ec2-54-235-146-51.compute-1.amazonaws.com:5432/d9tqp550p8taqi',
-  ssl: true
+  connectionString: myConnectionString
 });
 client.connect();
-
+// console.log(client.log);
 let queryResults = [];
 client.query('SELECT * FROM PLAYERS;', (err, res) => {
   if (err) throw err;
   for (let row of res.rows) {
-    // console.log(JSON.stringify(row));
     queryResults.push(row["pl_name"]);
   }
   // console.log(JSON.stringify(queryResults));
   client.end();
 });
+// ######################################################################################################
 
 // let qh = new QueryHandler(client);
 // qh.getAndParsePlayerStats();
