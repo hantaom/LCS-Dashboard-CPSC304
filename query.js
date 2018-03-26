@@ -116,6 +116,38 @@ class QueryHandler {
         this.getAndParsePlayerStats();
 
     };
+
+    createTables(client) {
+        client.query('CREATE TABLE players (\n' +
+        '\tpl_name varchar (30),\n' +
+        '\tposition varchar (10),\n' +
+        '\tteam_name varchar (30),\n' +
+        '\tprimary key (pl_name, team_name)\n' +
+        ');', (err, res)=> {
+        if (err) throw err;
+        console.log("holy crap it connected");
+        console.log(JSON.stringify(res));
+        });
+
+        client.query(`CREATE TABLE player_stats (
+            pl_name varchar(30),
+            games_played int,
+            cs_per_min int,
+            assists int,
+            kda float,
+            minutes_played int,
+            cs_total int,
+            kills int,
+            deaths int,
+            kill_participation float,
+            primary key (pl_name)
+            );`, (err, res)=> {
+            if (err) throw err;
+            console.log("holy crap it connected");
+            console.log(JSON.stringify(res));
+        });
+    };
+
 }
 
 module.exports = QueryHandler;
