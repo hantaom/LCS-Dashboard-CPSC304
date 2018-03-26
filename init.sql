@@ -9,13 +9,13 @@ create table champion (
 	ch_name varchar(30) primary key,
 	win_rate float,
 	pick_rate float,
-	ban_rate doufloatble
+	ban_rate float
 );
 create table game (
 	game_id varchar(50),
 	team_red varchar(30) references team,
 	team_blue varchar(30) references team,
-	time int not null,
+	game_time int not null,
 	result char(1),
 	duration int,
 	patch float,
@@ -39,7 +39,7 @@ create table plays_in (
 create table team (
 	team_name varchar(30),
 	head_coach varchar(30),
-	primary key (name)
+	primary key (team_name)
 );
 create table player_stats (
 	pl_name varchar(30) references player,
