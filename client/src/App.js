@@ -52,7 +52,6 @@ class App extends Component {
               >
               See Stats
             </button>
-            <TableView/>
           </div>
         )}
       </div>
