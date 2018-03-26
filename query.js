@@ -4,11 +4,11 @@ const proStatsReq = 'https://api.lolesports.com/api/v2/tournamentPlayerStats?gro
 
 class QueryHandler {
 
-    constructor(client){
+    constructor(client) {
         this.client = client;
     };
 
-    getRequest (request, port, onResult) {
+    getRequest(request, port, onResult) {
 
         let req = port.get(request, function (res) {
             console.log('STATUS: ' + res.statusCode);
@@ -69,21 +69,23 @@ class QueryHandler {
         return statColumnQuery + statValuesQuery + playerColumnQuery + playerStatQuery;
     };
 
-    executeAQuery(query){
-
-        this.client.query(query, (err, res)=> {
-            if (err) {
-                console.log(err);
-                throw err;
-            }
-            console.log("Query:\n" + query +"\n has been executed");
+    executeQuery(query) {
+        let that = this;
+        return new Promise(function (resolve, reject) {
+            that.client.query(query, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    reject (err);
+                }
+                resolve(res);
+            });
         });
     };
 
     insertQueriesToDB(queries) {
         let that = this;
         queries.forEach((query) => {
-            that.executeAQuery(query);
+            that.executeQuery(query);
         });
     };
 
@@ -108,14 +110,46 @@ class QueryHandler {
 
     deleteAllPlayersAndStats() {
         let deleteQuery = this.createDeleteQuery();
-        this.executeAQuery(deleteQuery);
+        this.executeQuery(deleteQuery);
     };
 
     updateAndParsePlayerStats() {
         this.deleteAllPlayersAndStats();
         this.getAndParsePlayerStats();
 
+    }
+
+    createTables(client) {
+        client.query('CREATE TABLE players (\n' +
+            '\tpl_name varchar (30),\n' +
+            '\tposition varchar (10),\n' +
+            '\tteam_name varchar (30),\n' +
+            '\tprimary key (pl_name, team_name)\n' +
+            ');', (err, res) => {
+            if (err) throw err;
+            console.log("holy crap it connected");
+            console.log(JSON.stringify(res));
+        });
+
+        client.query(`CREATE TABLE player_stats (
+            pl_name varchar(30),
+            games_played int,
+            cs_per_min int,
+            assists int,
+            kda float,
+            minutes_played int,
+            cs_total int,
+            kills int,
+            deaths int,
+            kill_participation float,
+            primary key (pl_name)
+            );`, (err, res) => {
+            if (err) throw err;
+            console.log("holy crap it connected");
+            console.log(JSON.stringify(res));
+        });
     };
+
 }
 
 module.exports = QueryHandler;

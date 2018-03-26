@@ -1,88 +1,34 @@
 const express = require('express');
 const path = require('path');
-const generatePassword = require('password-generator');
 
 const QueryHandler = require('./query.js');
 
-// Isaish PostgreSQL code
-// ######################################################################################################
-// const pg = require('pg');
-// const connectionString = process.env.DATABASE_URL || 'postgres://wiji:isaiah@localhost:5432/lcs';
-// const client = new pg.Client(connectionString);
-// client.connect();
-// let qh = new QueryHandler(client);
-// qh.deleteAllPlayersAndStats();
-// ######################################################################################################
+// FORMAT FOR POSTGRES
+// postgres://yourname:yourpassword@localhost:5432/nameOfDatabase
+
+const isaiahPSQL = 'postgres://wiji:isaiah@localhost:5432/lcs';
+const hantaoPSQL = 'postgres://hantao:Password1@localhost:5432/demodb';
+
+const pg = require('pg');
+const myConnectionString = process.env.DATABASE_URL || isaiahPSQL; // replace this with your name/password
+const client = new pg.Client({
+    connectionString: myConnectionString
+});
+
+client.connect();
+const qh = new QueryHandler(client);
 
 // Hantao PostgreSQL code
 // ######################################################################################################
-const myConnectionString = process.env.DATABASE_URL || 'postgres://hantao:Password1@localhost:5432/demodb';
-console.log(myConnectionString);
-const { Client } = require('pg');
-const client = new Client({
-  connectionString: myConnectionString
-});
-client.connect();
-// console.log(client.log);
-let queryResults = [];
-client.query('SELECT * FROM PLAYERS;', (err, res) => {
-  if (err) throw err;
-  for (let row of res.rows) {
-    queryResults.push(row["pl_name"]);
-  }
-  // console.log(JSON.stringify(queryResults));
-  client.end();
-});
-// ######################################################################################################
-
-// let qh = new QueryHandler(client);
-// qh.getAndParsePlayerStats();
-
-
-// ######################################################################################################
-
-
-// Create the Query Handler object
-// let qh = new QueryHandler(client);
-
-// COMMENTED OUT CREATION OF TABLES
-// ######################################################################################################
-// client.query('CREATE TABLE players (\n' +
-//     '\tpl_name varchar (30),\n' +
-//     '\tposition varchar (10),\n' +
-//     '\tteam_name varchar (30),\n' +
-//     '\tprimary key (pl_name, team_name)\n' +
-//     ');', (err, res)=> {
-//     if (err) throw err;
-//     console.log("holy crap it connected");
-//     console.log(JSON.stringify(res));
+// let queryResults = [];
+// client.query('SELECT * FROM PLAYERS;', (err, res) => {
+//   if (err) throw err;
+//   for (let row of res.rows) {
+//     queryResults.push(row["pl_name"]);
+//   }
+//   // console.log(JSON.stringify(queryResults));
+//   client.end();
 // });
-
-// client.query(`CREATE TABLE player_stats (
-// 	pl_name varchar(30),
-// 	games_played int,
-// 	cs_per_min int,
-// 	assists int,
-// 	kda float,
-// 	minutes_played int,
-// 	cs_total int,
-// 	kills int,
-// 	deaths int,
-// 	kill_participation float,
-// 	primary key (pl_name)
-// );`, (err, res)=> {
-//     if (err) throw err;
-//     console.log("holy crap it connected");
-//     console.log(JSON.stringify(res));
-// });
-// ######################################################################################################
-
-
-// qh.getAndParsePlayerStats();
-//console.log("Successfully added all data");
-
-// End PostgreSQL session
-// client.end();
 
 
 // Express code
@@ -91,38 +37,38 @@ const app = express();
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '/../client/build')));
-//app.use(express.static(__dirname + '/public'));
-
-// Put all API endpoints under '/api'
-app.get('/api/passwords', (req, res) => {
-  const count = 5;
-
-  // Generate some passwords
-  const passwords = Array.from(Array(count).keys()).map(i =>
-    generatePassword(12, false)
-  );
-
-  console.log(JSON.stringify(passwords));
-  // Return them as json
-  res.json(passwords);
-
-  console.log(`Sent ${count} passwords`);
-});
 
 // Query endpoint to send the query results
-app.get('/api/query', (req, res) => {
+app.get('/api/temp', (req, res) => {
   console.log(JSON.stringify(queryResults));
   res.json(queryResults);
   console.log("Query Results sent");
 });
 
+app.post('/api/query', function(request, response){
+  console.log(request.query);
+
+  let queryObj = request.query;
+  let queryString = queryObj.query;
+  console.log(queryString);
+
+  qh.executeQuery(queryString)
+      .then(queryResults => {
+          console.log(JSON.stringify(queryResults));
+          response.send(queryResults.rows);
+      })
+      .catch(err => {
+          console.log(err);
+      });
+});
+
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname+'/client/build/index.html'));
-// });
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname+'/client/build/index.html'));
+});
 
 const port = process.env.PORT || 5000;
 app.listen(port);
 
-console.log(`Password generator listening on ${port}`);
+console.log(`Query Server listening on port: ${port}`);
