@@ -6,23 +6,23 @@ const QueryHandler = require('./query.js');
 
 // Isaish PostgreSQL code
 // ######################################################################################################
-// const pg = require('pg');
-// const connectionString = process.env.DATABASE_URL || 'postgres://wiji:isaiah@localhost:5432/lcs';
-// const client = new pg.Client(connectionString);
-// client.connect();
-// let qh = new QueryHandler(client);
+const pg = require('pg');
+const connectionString = process.env.DATABASE_URL || 'postgres://wiji:isaiah@localhost:5432/lcs';
+const client = new pg.Client(connectionString);
+client.connect();
+let qh = new QueryHandler(client);
 // qh.deleteAllPlayersAndStats();
 // ######################################################################################################
 
 // Hantao PostgreSQL code
 // ######################################################################################################
-const myConnectionString = process.env.DATABASE_URL || 'postgres://hantao:Password1@localhost:5432/demodb';
-console.log(myConnectionString);
-const { Client } = require('pg');
-const client = new Client({
-  connectionString: myConnectionString
-});
-client.connect()
+// const myConnectionString = process.env.DATABASE_URL || 'postgres://hantao:Password1@localhost:5432/demodb';
+// console.log(myConnectionString);
+// const { Client } = require('pg');
+// const client = new Client({
+//   connectionString: myConnectionString
+// });
+// client.connect()
 // // console.log(client.log);
 // let queryResults = [];
 // client.query('SELECT * FROM PLAYERS;', (err, res) => {
@@ -59,22 +59,16 @@ app.get('/api/temp', (req, res) => {
 app.post('/api/query', function(request, response){
   console.log(request.query);
 
-  var queryObj = request.query;
-  var jsonResponse = {};
-  var queryString = queryObj.query;
+  let queryObj = request.query;
+  let queryString = queryObj.query;
   console.log(queryString);
 
   // Connect to the client
-
-  client.query(queryString, (err, res) => {
-    if (err) throw err;
-    res.rows.forEach(function (value, i) {
-      jsonResponse[i] = JSON.stringify(value);
-      console.log(i);
-      console.log(jsonResponse);  
-    });
-    response.send(jsonResponse);
-  });
+  qh.executeQuery(queryString)
+      .then(queryResults => {
+          console.log(JSON.stringify(queryResults));
+          response.send(queryResults.rows);
+      });
 });
 
 // The "catchall" handler: for any request that doesn't

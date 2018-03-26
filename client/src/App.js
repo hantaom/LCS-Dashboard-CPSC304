@@ -22,19 +22,26 @@ class App extends Component {
     fetch('/api/temp')
       .then(res => res.json())
       .then(queryResults => this.setState({ queryResults }))
-  }
+  };
 
   getQueryResults = () => {
     let that = this;
     request
     .post('/api/query')
     .set('Content-Type', 'application/x-www-form-urlencoded')
-    .query({ query: 'SELECT * FROM PLAYERS;'})
+    .query({ query: that.buildQuery()})
     .end(function(err, res){
       console.log(res.text);
       that.setState( {queryResults: res.text })
     }); 
-  }
+  };
+
+  buildQuery = () => {
+    // Builds a query from forms or whatever
+
+      // temporarily returning generic query
+      return 'SELECT * FROM PLAYERS;';
+  };
 
   render() {
     const { queryResults } = this.state;
