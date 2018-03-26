@@ -3,6 +3,7 @@ import './App.css';
 import TableView from "./components/TableView";
 import request from 'superagent';
 import Selection from "./components/Selection";
+import Join from "./components/Join"
 
 class App extends Component {
   // Initialize state
@@ -60,9 +61,11 @@ class App extends Component {
               >
               See Stats
             </button>
+            <h1>Selection Queries</h1>
             <Selection/>
+            <h1>Join Queries</h1>
+            <Join/>
           </div>
-        )}
       </div>
     );
   }
