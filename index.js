@@ -1,29 +1,25 @@
 const express = require('express');
 const path = require('path');
-const generatePassword = require('password-generator');
 
 const QueryHandler = require('./query.js');
 
-// Isaish PostgreSQL code
-// ######################################################################################################
+// FORMAT FOR POSTGRES
+// postgres://yourname:yourpassword@localhost:5432/nameOfDatabase
+
+const isaiahPSQL = 'postgres://wiji:isaiah@localhost:5432/lcs';
+const hantaoPSQL = 'postgres://hantao:Password1@localhost:5432/demodb';
+
 const pg = require('pg');
-const connectionString = process.env.DATABASE_URL || 'postgres://wiji:isaiah@localhost:5432/lcs';
-const client = new pg.Client(connectionString);
+const myConnectionString = process.env.DATABASE_URL || isaiahPSQL; // replace this with your name/password
+const client = new Client({
+    connectionString: myConnectionString
+});
+
 client.connect();
-let qh = new QueryHandler(client);
-// qh.deleteAllPlayersAndStats();
-// ######################################################################################################
+const qh = new QueryHandler(client);
 
 // Hantao PostgreSQL code
 // ######################################################################################################
-// const myConnectionString = process.env.DATABASE_URL || 'postgres://hantao:Password1@localhost:5432/demodb';
-// console.log(myConnectionString);
-// const { Client } = require('pg');
-// const client = new Client({
-//   connectionString: myConnectionString
-// });
-// client.connect()
-// // console.log(client.log);
 // let queryResults = [];
 // client.query('SELECT * FROM PLAYERS;', (err, res) => {
 //   if (err) throw err;
@@ -33,13 +29,6 @@ let qh = new QueryHandler(client);
 //   // console.log(JSON.stringify(queryResults));
 //   client.end();
 // });
-// ######################################################################################################
-
-// Create the Query Handler object
-// let qh = new QueryHandler(client);
-// qh.getAndParsePlayerStats();
-
-// ######################################################################################################
 
 
 // Express code
@@ -63,7 +52,6 @@ app.post('/api/query', function(request, response){
   let queryString = queryObj.query;
   console.log(queryString);
 
-  // Connect to the client
   qh.executeQuery(queryString)
       .then(queryResults => {
           console.log(JSON.stringify(queryResults));

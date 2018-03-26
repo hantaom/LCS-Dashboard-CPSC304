@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import TableView from "./components/TableView";
 import request from 'superagent';
+import Selection from "./components/Selection";
 
 class App extends Component {
   // Initialize state
@@ -59,6 +60,7 @@ class App extends Component {
               >
               See Stats
             </button>
+            <Selection/>
           </div>
         )}
       </div>
