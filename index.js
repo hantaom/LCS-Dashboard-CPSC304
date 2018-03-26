@@ -11,6 +11,7 @@ const hantaoPSQL = 'postgres://hantao:Password1@localhost:5432/demodb';
 
 const pg = require('pg');
 const myConnectionString = process.env.DATABASE_URL || hantaoPSQL; // replace this with your name/password
+
 const client = new pg.Client({
     connectionString: myConnectionString
 });
@@ -56,6 +57,9 @@ app.post('/api/query', function(request, response){
       .then(queryResults => {
           console.log(JSON.stringify(queryResults));
           response.send(queryResults.rows);
+      })
+      .catch(err => {
+          console.log(err);
       });
 });
 

@@ -75,7 +75,7 @@ class QueryHandler {
             that.client.query(query, (err, res) => {
                 if (err) {
                     console.log(err);
-                    throw err;
+                    reject (err);
                 }
                 resolve(res);
             });
