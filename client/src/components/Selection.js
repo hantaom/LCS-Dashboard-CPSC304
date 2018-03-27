@@ -1,6 +1,7 @@
 import React from "react";
 import request from "superagent";
 import {CONSTANTS} from "../TableConstants";
+import { Button } from 'reactstrap';
 
 export default class Selection extends React.Component {
 
@@ -243,7 +244,7 @@ export default class Selection extends React.Component {
                 <button type="button" value="OR" onClick={this.createWhereOption.bind(this)}>Add OR condition</button>
                 <br/>
                 <input type="submit" value="Generate Query"/>
-
+                <Button type="submit" outline color="primary">Generate Query</Button>
             </form>
         );
     }
