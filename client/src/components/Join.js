@@ -286,28 +286,28 @@ export default class Selection extends React.Component {
         return (
           <form onSubmit={this.handleSubmit}>
             <label>
-              Table:
+              <h3>Table:</h3>
               <select multiple={true} value={this.state.tableNames.selected} onChange={this.handleTableChanges}>
                 {this.createTableOptions()}
               </select>
             </label>
             <br/>
             <label>
-              Please select your columns:
+              <h3>Please select your columns:</h3>
               <select multiple={true} value={this.state.selectedColumns.selected} onChange={this.handleColumnChanges}>
                 {this.createColumnOptions()}
               </select>
             </label>
             <br/>
             <label>
-              Please select the join condition:
+              <h3>Please select the join condition:</h3>
               <select multiple={true} value={this.state.joinOptions.selected} onChange={this.handleJoinChanges}>
                 {this.createJoinOptions()}
               </select>
             </label>
             <br/>
             <label>
-              Please select any restrictions (WHERE):
+              <h3>Please select any restrictions (WHERE):</h3>
               <select multiple={true} value={this.state.whereOptions.selected} onChange={this.handleWhereChanges}>
                 {this.createWhereOptions()}
               </select>
@@ -317,7 +317,6 @@ export default class Selection extends React.Component {
             <input type="submit" value="Generate Query" />
             <br/>
             <br/>
-            <TableView/>
           </form>
         );
       }

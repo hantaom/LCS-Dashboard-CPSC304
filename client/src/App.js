@@ -4,6 +4,7 @@ import TableView from "./components/TableView";
 import request from 'superagent';
 import Selection from "./components/Selection";
 import Join from "./components/Join"
+import Delete from "./components/Delete"
 
 class App extends Component {
   // Initialize state
@@ -65,7 +66,10 @@ class App extends Component {
             <Selection/>
             <h1>Join Queries</h1>
             <Join/>
+            <h1>Delete Queries</h1>
+            <Delete/>
             <br/>
+            <TableView/>
           </div>
       </div>
     );
