@@ -184,6 +184,9 @@ export default class Selection extends React.Component {
     // WHERE
 
     createWhereOption(event) {
+
+        if (this.state.selectedTable === '') return;
+
         let newWhereForm = this.state.whereFormStates;
         let conjunction = event.target.value;
         let i = newWhereForm.length;
@@ -256,17 +259,23 @@ export default class Selection extends React.Component {
                             </select>
                             <input id={i} type="text" value={formState.inputtedValue}
                                    onChange={this.handleWhereInputChanges.bind(this)}/>
-                            <button type="button" value="delete" id={i}
+                            <Button outline color="danger" type="button" value="delete" id={i}
                                     onClick={this.deleteWhereOption.bind(this)}>Delete
-                            </button>
+                            </Button>
 
                         </div>))}
                 </label>
                 }
                 <br/>
                 <br/>
-                {button}
-                <Button type="submit" color="success">Generate Query</Button>
+                {
+                    this.state.selectedTable !== '' &&
+                    <div>
+                        {button}
+                        <Button type="submit" outline color="primary">Generate Query</Button>
+                    </div>
+                }
+
             </form>
         );
     }
