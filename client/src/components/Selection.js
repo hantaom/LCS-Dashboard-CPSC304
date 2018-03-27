@@ -10,7 +10,7 @@ export default class Selection extends React.Component {
             selectedColumns: {},
             selectedTable: '',
             displayColumns: [],
-            displaySelectedColumns: []
+            displaySelectedColumns: [],
         };
 
         // Bind this to the function you need
@@ -61,7 +61,6 @@ export default class Selection extends React.Component {
     };
 
     handleSubmit(event) {
-        console.log("hello");
         let that = this;
         request
             .post('/api/query')
@@ -69,7 +68,10 @@ export default class Selection extends React.Component {
             .query({ query: that.buildQuery()})
             .end(function(err, res){
                 console.log(res.text);
-                that.setState( {queryResults: res.text })
+                that.setState({
+                    queryResults: res,
+                    headerNames: that.state.displaySelectedColumns
+                });
             });
         event.preventDefault();
     }
@@ -78,10 +80,9 @@ export default class Selection extends React.Component {
         let items = [];
         let tables = CONSTANTS.TABLE_NAMES;
 
-        for (let i = 0; i <= tables.length - 1; i++) {
-            // Dynamically set the options for tables
-            items.push(<option value={tables[i]}>{tables[i]}</option>);
-        }
+        tables.forEach(table => {
+            items.push(<option key={table} value={table}>{table}</option>);
+        });
 
         return items;
     }
@@ -98,6 +99,8 @@ export default class Selection extends React.Component {
             items.push(<option value={columns[i]}>{columns[i]}</option>);
         }
 
+        console.log(items);
+
         return items;
     }
 
@@ -106,19 +109,21 @@ export default class Selection extends React.Component {
         return (
             <form onSubmit={this.handleSubmit}>
                 <label>
-                    Table:
+                    <header>Table:</header>
                     <select multiple={true} value={this.state.tableNames} onChange={this.handleTableChanges}>
                         {this.createTableOptions()}
                     </select>
                 </label>
                 <br/>
+                <br/>
 
                 <label>
-                    Please select any restrictions:
+                    <header>Please select data from table:</header>
                     <select multiple={true} value={this.state.displaySelectedColumns} onChange={this.handleColumnChanges}>
                         {this.createColumnOptions()}
                     </select>
                 </label>
+                <br/>
                 <br/>
                 <input type="submit" value="Generate Query"/>
             </form>
