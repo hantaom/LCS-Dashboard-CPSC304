@@ -5,13 +5,25 @@ import request from 'superagent';
 import Selection from "./components/Selection";
 import Join from "./components/Join"
 import Delete from "./components/Delete"
+import { TabContent, TabPane, Nav, NavItem, NavLink, Button, Row, Col } from 'reactstrap';
 
 class App extends Component {
   // Initialize state
 
   constructor(props) {
     super(props);
-    this.state = { queryResults: {hello: "WORLD"} };
+    this.state = { queryResults: {hello: "WORLD"},
+                   activeTab: '1'
+                  };
+    this.toggle = this.toggle.bind(this);
+  }
+
+  toggle(tab) {
+    if (this.state.activeTab !== tab) {
+      this.setState({
+        activeTab: tab
+      });
+    }
   }
 
   // Fetch Query Results
@@ -50,27 +62,60 @@ class App extends Component {
     const { queryResults } = this.state;
     return (
       <div className="App">
-        <h1> LCS Dashboard - NEW CHANGE!!!!!! </h1>
-          <div>
-            <h1>LCS Dashboard</h1>
-            <pre>
-              {JSON.stringify(queryResults)}
-            </pre>
-            <button
-              className="more"
-              onClick={this.getQueryResults}
-              >
-              See Stats
-            </button>
-            <h1>Selection Queries</h1>
-            <Selection/>
-            <h1>Join Queries</h1>
-            <Join/>
-            <h1>Delete Queries</h1>
-            <Delete/>
+        <h1 className="title"> LCS Dashboard </h1>
+          <div className="contentBody">
+            <Nav tabs>
+              <NavItem>
+                <NavLink
+                  onClick={() => { this.toggle('1'); }}
+                  >
+                  Selection Queries
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  onClick={() => { this.toggle('2'); }}
+                >
+                  Join Queries
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  onClick={() => { this.toggle('3'); }}
+                >
+                  Deletion Queries
+                </NavLink>
+              </NavItem>
+            </Nav>
+            <TabContent activeTab={this.state.activeTab}>
+              <TabPane tabId="1">
+               <Row>
+                <Col sm="12">
+                  <h4>Selection Queries</h4>
+                  <Selection/>
+                </Col>
+               </Row>
+              </TabPane>
+              <TabPane tabId="2">
+               <Row>
+                <Col sm="12">
+                  <h4>Join Queries</h4>
+                  <Join/>
+                </Col>
+               </Row>
+              </TabPane>
+              <TabPane tabId="3">
+               <Row>
+                <Col sm="12">
+                  <h4>Deletion Queries</h4>
+                  <Delete/>
+                </Col>
+               </Row>
+              </TabPane>
+            </TabContent>
             <br/>
-            <TableView/>
           </div>
+          <TableView/>
       </div>
     );
   }

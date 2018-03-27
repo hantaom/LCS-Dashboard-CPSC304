@@ -1,6 +1,7 @@
 import React from "react";
 import request from "superagent";
 import {CONSTANTS} from "../TableConstants";
+import { Button } from 'reactstrap';
 
 export default class Selection extends React.Component {
 
@@ -125,7 +126,7 @@ export default class Selection extends React.Component {
                 </label>
                 <br/>
                 <br/>
-                <input type="submit" value="Generate Query"/>
+                <Button type="submit" outline color="primary">Generate Query</Button>
             </form>
         );
     }

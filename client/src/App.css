@@ -4,6 +4,13 @@
   width: 100%;
 }
 
+.contentBody {
+  text-align: center;
+  font-family: "Courier New", monospace;
+  width: 100%;
+  background-image: url("./Assets/Background.jpg");
+}
+
 h1 {
   font-weight: normal;
   font-size: 42px;

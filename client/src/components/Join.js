@@ -2,6 +2,7 @@ import React from "react";
 import {CONSTANTS} from "../TableConstants";
 import TableView from "./TableView";
 import request from 'superagent';
+import { Button } from 'reactstrap';
 
 export default class Selection extends React.Component {
 
@@ -286,35 +287,35 @@ export default class Selection extends React.Component {
         return (
           <form onSubmit={this.handleSubmit}>
             <label>
-              <h3>Table:</h3>
+              <header>Table:</header>
               <select multiple={true} value={this.state.tableNames.selected} onChange={this.handleTableChanges}>
                 {this.createTableOptions()}
               </select>
             </label>
             <br/>
             <label>
-              <h3>Please select your columns:</h3>
+              <header>Please select your columns:</header>
               <select multiple={true} value={this.state.selectedColumns.selected} onChange={this.handleColumnChanges}>
                 {this.createColumnOptions()}
               </select>
             </label>
             <br/>
             <label>
-              <h3>Please select the join condition:</h3>
+              <header>Please select the join condition:</header>
               <select multiple={true} value={this.state.joinOptions.selected} onChange={this.handleJoinChanges}>
                 {this.createJoinOptions()}
               </select>
             </label>
             <br/>
             <label>
-              <h3>Please select any restrictions (WHERE):</h3>
+              <header>Please select any restrictions (WHERE): </header>
               <select multiple={true} value={this.state.whereOptions.selected} onChange={this.handleWhereChanges}>
                 {this.createWhereOptions()}
               </select>
             </label>
             <br/>
             <br/>
-            <input type="submit" value="Generate Query" />
+            <Button type="submit" outline color="primary">Generate Query</Button>
             <br/>
             <br/>
           </form>
