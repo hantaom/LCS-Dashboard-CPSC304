@@ -66,7 +66,6 @@ class App extends Component {
             <h1>Join Queries</h1>
             <Join/>
             <br/>
-            <TableView/>
           </div>
       </div>
     );

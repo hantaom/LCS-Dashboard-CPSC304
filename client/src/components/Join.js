@@ -1,5 +1,7 @@
 import React from "react";
-
+import {CONSTANTS} from "../TableConstants";
+import TableView from "./TableView";
+import request from 'superagent';
 
 export default class Selection extends React.Component {
 
@@ -102,7 +104,54 @@ export default class Selection extends React.Component {
       // #######################################################################################
     
       handleSubmit(event) {
-        alert('Your favorite flavor is: ' + this.state.tableNames);
+        let query_tables = this.state.tableNames.selected;
+        let query_columns = this.state.selectedColumns.selected;
+        let query_joins = this.state.joinOptions.selected;
+        let query_filters = this.state.whereOptions.selected;
+        let queryString = 'select ';
+        // Generate the SELECT part of the query string
+        if (query_columns.length > 0) {
+            for (let i = 0; i <= query_columns.length - 1; i++) {
+                if (i === query_columns.length - 1) {
+                    queryString = queryString + query_columns[i] + ' ';
+                } else {
+                    queryString = queryString + query_columns[i] + ", ";
+                }
+            }
+        }
+        // Generate the "FROM" part of the query string
+        queryString = queryString + "from ";
+        if (query_tables.length > 0) {
+            for (let i = 0; i <= query_tables.length - 1; i++) {
+                if (i === 0) {
+                    queryString = queryString + query_tables[i] + ' ';
+                } else {
+                    queryString = queryString + "inner join " + query_tables[i] + ' ';
+                }
+            }
+        }
+        // Generate the INNER JOIN part of the query string
+        queryString = queryString + "on ";
+        if (query_joins.length > 0) {
+            for (let i = 0; i <= query_joins.length - 1; i++) {
+                if (i === 0) {
+                    queryString = queryString + query_joins[i];
+                }
+            }
+        }
+        // Append ending of query
+        queryString = queryString + ";";
+        console.log(queryString);
+        // Make the post request
+        let that = this;
+        request
+        .post('/api/query')
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+        .query({ query: queryString})
+        .end(function(err, res){
+          console.log(res.text);
+          alert(res.text);
+        }); 
         event.preventDefault();
       }
 
@@ -198,14 +247,19 @@ export default class Selection extends React.Component {
     createJoinOptions() {
         let items = [];
         let joinFilters = [];
-        let selectedTable1 = this.state.tableNames.selected[0];
-        let selectedTable2 = this.state.tableNames.selected[1];
-        for (let i = 0; i <= selectedTable1.length - 1; i++) {
-            let columnName_T1 = selectedTable1[i].split(".")[1];
-            for (let j = 0; j <= selectedTable2.length - 1; j++) {
-                let columnName_T2 = selectedTable2[j].split(".")[1];
-                if (columnName_T1 === columnName_T1) {
-                    joinFilters.push(selectedTable1[i] + "=" + selectedTable2[j])
+        if (this.state.tableNames.selected.length > 1) {
+            let t1 = this.state.tableNames.selected[0];
+            let t1_columns = CONSTANTS.TABLES[t1];
+            let t2 = this.state.tableNames.selected[1];
+            let t2_columns = CONSTANTS.TABLES[t2];
+            for (let i = 0; i <= t1_columns.length - 1; i++) {
+                let columnName_T1 = t1_columns[i].split(".")[1];
+                // console.log(columnName_T1);
+                for (let j = 0; j <= t2_columns.length - 1; j++) {
+                    let columnName_T2 = t2_columns[j].split(".")[1];
+                    if (columnName_T1 === columnName_T2) {
+                        joinFilters.push(t1_columns[i] + "=" + t2_columns[j])
+                    }
                 }
             }
         }
@@ -218,7 +272,7 @@ export default class Selection extends React.Component {
 
     createWhereOptions() {
         let items = [];
-        let filterColumns = ["plays_in.game_id", "plays_in.ch_name", "plays_in.pl_name"];
+        let filterColumns = [];
         for (let i = 0; i <= filterColumns.length - 1; i++) {             
             // Dynamically set the options for tables 
             items.push(<option value={filterColumns[i]}>{filterColumns[i]}</option>);   
@@ -262,6 +316,9 @@ export default class Selection extends React.Component {
             <br/>
             <br/>
             <input type="submit" value="Generate Query" />
+            <br/>
+            <br/>
+            <TableView/>
           </form>
         );
       }
