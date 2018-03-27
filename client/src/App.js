@@ -65,6 +65,8 @@ class App extends Component {
             <Selection/>
             <h1>Join Queries</h1>
             <Join/>
+            <br/>
+            <TableView/>
           </div>
       </div>
     );
