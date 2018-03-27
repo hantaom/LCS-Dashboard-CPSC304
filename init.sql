@@ -77,6 +77,21 @@ create table plays_in (
 );
 /* Insert Statements */
 
+insert into team (team_name, head_coach)
+	values ('Cloud9', 'Reapered');
+insert into team (team_name, head_coach)
+	values ('Echo Fox', 'Inero');
+insert into team (team_name, head_coach)
+	values ('Team Liquid', 'Locodoco');
+insert into team (team_name, head_coach)
+	values ('100 Thieves', 'pro0lly');
+insert into team (team_name, head_coach)
+	values ('Clutch Gaming', 'DLim');
+insert into team (team_name, head_coach)
+	values ('Team Solo Mid', 'SSONG');
+insert into team (team_name, head_coach)
+	values ('Counter Logic Gaming', 'Zikz');
+
 insert into players (pl_name, team_name, position)
 values ('Doublelift', 'Team Liquid', 'adc');
 insert into players (pl_name, team_name, position)
@@ -131,21 +146,6 @@ insert into plays_in (game_id, ch_name, pl_name)
 values ('4', 'Ryze', 'Jensen');
 insert into plays_in (game_id, ch_name, pl_name)
 values ('5', 'Azir', 'Bjergsen');
-
-insert into team (team_name, head_coach)
-values ('Cloud9', 'Reapered');
-insert into team (team_name, head_coach)
-values ('Echo Fox', 'Inero');
-insert into team (team_name, head_coach)
-values ('Team Liquid', 'Locodoco');
-insert into team (team_name, head_coach)
-values ('100 Thieves', 'pro0lly');
-insert into team (team_name, head_coach)
-values ('Clutch Gaming', 'DLim');
-insert into team (team_name, head_coach)
-values ('Team Solo Mid', 'SSONG');
-insert into team (team_name, head_coach)
-values ('Counter Logic Gaming', 'Zikz');
 
 insert into player_stats (pl_name, games_played, cs_per_min, assists, kda, minutes_played, cs_total, kills, deaths, kill_participation)
 values ('Doublelift', 9.1, 27, 7, 37, 81, 10.5, 2783, 266, 8);
