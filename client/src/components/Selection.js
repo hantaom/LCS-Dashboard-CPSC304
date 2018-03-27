@@ -266,7 +266,7 @@ export default class Selection extends React.Component {
                 <br/>
                 <br/>
                 {button}
-                <Button type="submit" outline color="primary">Generate Query</Button>
+                <Button type="submit" color="success">Generate Query</Button>
             </form>
         );
     }

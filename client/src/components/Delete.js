@@ -112,7 +112,7 @@ export default class Delete extends React.Component {
             </label>
             <br/>
             <br/>
-            <Button type="submit" outline color="primary">Generate Query</Button>
+            <Button type="submit" color="success">Generate Query</Button>
             <br/>
             <br/>
           </form>
