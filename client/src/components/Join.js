@@ -2,6 +2,7 @@ import React from "react";
 import {CONSTANTS} from "../TableConstants";
 import TableView from "./TableView";
 import request from 'superagent';
+import { Button } from 'reactstrap';
 
 export default class Selection extends React.Component {
 
@@ -9,7 +10,6 @@ export default class Selection extends React.Component {
         super(props);
         this.state = {tableNames: {selected: []},
                       selectedColumns: {selected: []},
-                      query: 'SELECT players.position, player_stats.assists FROM players INNER JOIN player_stats ON players.pl_name = player_stats.pl_name;',
                       joinOptions: {selected: []},
                       whereOptions: {selected: []},
                       displayColumns: []
@@ -287,38 +287,37 @@ export default class Selection extends React.Component {
         return (
           <form onSubmit={this.handleSubmit}>
             <label>
-              Table:
+              <header>Table:</header>
               <select multiple={true} value={this.state.tableNames.selected} onChange={this.handleTableChanges}>
                 {this.createTableOptions()}
               </select>
             </label>
             <br/>
             <label>
-              Please select your columns:
+              <header>Please select your columns:</header>
               <select multiple={true} value={this.state.selectedColumns.selected} onChange={this.handleColumnChanges}>
                 {this.createColumnOptions()}
               </select>
             </label>
             <br/>
             <label>
-              Please select the join condition:
+              <header>Please select the join condition:</header>
               <select multiple={true} value={this.state.joinOptions.selected} onChange={this.handleJoinChanges}>
                 {this.createJoinOptions()}
               </select>
             </label>
             <br/>
             <label>
-              Please select any restrictions (WHERE):
+              <header>Please select any restrictions (WHERE): </header>
               <select multiple={true} value={this.state.whereOptions.selected} onChange={this.handleWhereChanges}>
                 {this.createWhereOptions()}
               </select>
             </label>
             <br/>
             <br/>
-            <input type="submit" value="Generate Query" />
+            <Button type="submit" outline color="primary">Generate Query</Button>
             <br/>
             <br/>
-            <TableView/>
           </form>
         );
       }
