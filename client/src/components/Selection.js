@@ -14,8 +14,8 @@ export default class Selection extends React.Component {
             displaySelectedColumns: [],
 
             whereFormStates: []
-            /**
-             * whereFormStates[i] = {
+            /*
+             whereFormStates[i] = {
                 conjunction: conjunction,
                 selectedColumn: "",
                 selectedCondition: "",
@@ -30,7 +30,24 @@ export default class Selection extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     };
 
-    // Functions for handling the state changes
+    /* HANDLE FUNCTIONS */
+
+    handleSubmit(event) {
+        let that = this;
+        request
+            .post('/api/query')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .query({query: that.buildQuery()})
+            .end(function (err, res) {
+                console.log(res.text);
+                that.setState({
+                    queryResults: res,
+                    headerNames: that.state.displaySelectedColumns
+                });
+            });
+        event.preventDefault();
+    }
+
     handleTableChanges(event) {
         let tableSelected = event.target.value;
         this.setState({
@@ -39,6 +56,15 @@ export default class Selection extends React.Component {
             displayColumns: [],
             displaySelectedColumns: []
         });
+    }
+
+    handleColumnChanges(event) {
+        let newColumns = this.state.selectedColumns;
+        let eventValue = event.target.value;
+
+        let newColumnsArray = this.columnChangeHelper(newColumns, eventValue);
+
+        this.setState({displaySelectedColumns: newColumnsArray});
     }
 
     columnChangeHelper(newColumns, eventValue) {
@@ -55,15 +81,6 @@ export default class Selection extends React.Component {
         });
 
         return newColumnsArray;
-    }
-
-    handleColumnChanges(event) {
-        let newColumns = this.state.selectedColumns;
-        let eventValue = event.target.value;
-
-        let newColumnsArray = this.columnChangeHelper(newColumns, eventValue);
-
-        this.setState({displaySelectedColumns: newColumnsArray});
     }
 
     handleWhereColumnStates(event) {
@@ -137,21 +154,8 @@ export default class Selection extends React.Component {
         return query + ";";
     };
 
-    handleSubmit(event) {
-        let that = this;
-        request
-            .post('/api/query')
-            .set('Content-Type', 'application/x-www-form-urlencoded')
-            .query({query: that.buildQuery()})
-            .end(function (err, res) {
-                console.log(res.text);
-                that.setState({
-                    queryResults: res,
-                    headerNames: that.state.displaySelectedColumns
-                });
-            });
-        event.preventDefault();
-    }
+
+    /* CREATE OPTIONS */
 
     createTableOptions() {
         let items = [];
@@ -181,9 +185,10 @@ export default class Selection extends React.Component {
         return items;
     }
 
-    // WHERE
-
     createWhereOption(event) {
+
+        if (this.state.selectedTable === '') return;
+
         let newWhereForm = this.state.whereFormStates;
         let conjunction = event.target.value;
         let i = newWhereForm.length;
@@ -256,17 +261,22 @@ export default class Selection extends React.Component {
                             </select>
                             <input id={i} type="text" value={formState.inputtedValue}
                                    onChange={this.handleWhereInputChanges.bind(this)}/>
-                            <button type="button" value="delete" id={i}
+                            <Button outline color="danger" type="button" value="delete" id={i}
                                     onClick={this.deleteWhereOption.bind(this)}>Delete
-                            </button>
+                            </Button>
 
                         </div>))}
                 </label>
                 }
                 <br/>
                 <br/>
-                {button}
-                <Button type="submit" color="success">Generate Query</Button>
+                {this.state.selectedTable !== '' &&
+                <div>
+                    {button}
+                    <Button type="submit" outline color="primary">Generate Query</Button>
+                </div>
+                }
+
             </form>
         );
     }
