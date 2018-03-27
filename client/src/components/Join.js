@@ -9,7 +9,6 @@ export default class Selection extends React.Component {
         super(props);
         this.state = {tableNames: {selected: []},
                       selectedColumns: {selected: []},
-                      query: 'SELECT players.position, player_stats.assists FROM players INNER JOIN player_stats ON players.pl_name = player_stats.pl_name;',
                       joinOptions: {selected: []},
                       whereOptions: {selected: []},
                       displayColumns: []
