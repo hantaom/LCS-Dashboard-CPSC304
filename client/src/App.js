@@ -173,7 +173,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Division Queries</h4>
-                                    <Division/>
+                                    <Division setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>

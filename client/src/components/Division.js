@@ -1,285 +1,314 @@
 import React from "react";
-import { Button } from 'reactstrap';
-import request from 'superagent';
+import {CONSTANTS} from "../TableConstants";
+import TableView from "./TableView";
+import request from "superagent";
+import { Button } from "reactstrap";
 
 export default class Division extends React.Component {
+
 	constructor(props) {
 		super(props);
 		this.state = {
-			t: {},
-			c: {},
-			divideeTables: {},
-			dividerTables: {},
-			divideeColumns: [],
-			dividerColumns: [],
+			tables: {},
+			divisorTables: {current: []},
+			dividendTables: {current: []},
+			divisorColumns: {current: []},
+			dividendColumns: {current: []},
 			mode: "null"
 		}
+		let tables = this.state.tables;
+		tables["team"] = {attr: ["team_name","head_coach"]};
+		tables["players"] = {attr: ["pl_name","position","team_name","rating"]};
+		tables["champion"] = {attr: ["ch_name","win_rate","pick_rate","ban_rate"]};
+		tables["game"] = {attr: ["game_id","team_red","team_blue","game_time","result","duration","patch"]};
+		tables["game_stats"] = {attr: ["game_id","first_blood","total_gold_red","total_gold_blue","total_champ_kill"]};
+		tables["player_stats"]= {attr: ["pl_name","games_played","cs_per_min","assists","kda","minutes_played","cs_total","kills","deaths","kill_participation"]};
+		tables["team_stats"] = {attr: ["team_name","games_played","wins","total_deaths","total_assists","avg_game_time"]};
+		tables["plays_in"] = {attr: ["game_id","ch_name","pl_name"]};
 
-		//Initialize table names
-		let { t, c } = this.state;
-		t["team"] = "Team";
-		t["players"] = "Players";
-		t["champion"] = "Champion";
-		t["game"] = "Game";
-		t["game_stats"] = "Game statistics";
-		t["players_stats"] = "Player statistics";
-		t["team_stats"] = "Team statistics";
-		t["plays_in"] = "Plays in";
-
-		//Initialize column name
-		c["team"] = {attr: ["team_name", "head_coach"]};
-		c["players"] = {attr: ["pl_name", "position", "team_name", "rating"]};
-		c["champion"] = {attr: ["ch_name", "win_rate", "pick_rate", "ban_rate"]};
-		c["game"] = {attr: ["game_id", "team_red", "team_blue", "game_time", "result", "duration", "patch"]};
-		c["game_stats"] = {attr: ["game_id", "first_blood", "total_gold_red", "total_gold_blue", "total_champ_kill"]};
-		c["players_stats"] = {attr: ["pl_name","games_played","cs_per_min","assists","kda","minutes_played","cs_total","kills","deaths","kill_participation"]};
-		c["team_stats"] = {attr: ["team_name","games_played","wins","losses","teamkd","total_kills","total_deaths","total_assists","avg_game_time"]};
-		c["plays_in"] = {attr: ["game_id","ch_name","pl_name"]};
-
-		//Bind this to the function you need
-		this.handleDividerColumnChanges = this.handleDividerColumnChanges.bind(this);
-		this.handleDivideeColumnChanges = this.handleDivideeColumnChanges.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
+		this.buildQuery = this.buildQuery.bind(this);
+		this.buildDivisorClause = this.buildDivisorClause.bind(this);
+		this.handleTableChanges = this.handleTableChanges.bind(this);
+		this.handleColumnChanges = this.handleColumnChanges.bind(this);
 		this.handleModeChanges = this.handleModeChanges.bind(this);
-		this.handleDivideeTableChanges = this.handleDivideeTableChanges.bind(this);
-		this.handleDividerTableChanges = this.handleDividerTableChanges.bind(this);
 		this.createTableOptions = this.createTableOptions.bind(this);
 		this.createColumnOptions = this.createColumnOptions.bind(this);
-		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
 	handleSubmit(event) {
-		let queryString = "";
-		let { t,c,divideeTables,dividerTables,mode } = this.state;
-
-		if (divideeTables.length <= 0) {
-			alert("Please choose at least an attribute to display from.");
+		let queryString = this.buildQuery();
+		if (queryString === undefined) {
 			return;
 		}
-		if (dividerTables.length <= 0) {
-			alert("Please choose one or more attributes to compare with.");
-			return;
-		}
-		if (mode === "null") {
-			alert("Please choose either all of or none of the attributes in the secondary table should be compared with the primary table.");
-			return;
-		}
-		let divideeAttr = [];
-		let selectClause = "select ";
-		let fromClause = "from ";
-		for (let table in divideeTables) {
-			fromClause = fromClause + table + " ";
-			let { attr } = divideeTables[table];
-			for (let attribute in attr) {
-				attribute = table + "." + attribute;
-				selectClause = selectClause + attribute + " ";
-				divideeAttr.push(attribute);
-			}
-		}
-		queryString = queryString + selectClause + fromClause;
-
-		let dividerAttr = [];
-		selectClause = "select ";
-		fromClause = "from ";
-		if (mode === "none") {
-			for (let table in dividerTables) {
-				fromClause = fromClause + table + " ";
-				let { attr } = dividerTables[table];
-				for (let attribute in attr) {
-					attribute = table + "." + attribute;
-					selectClause = selectClause + attribute + " ";
-					dividerAttr.push(attribute);
-				}
-			}
-			if (dividerAttr.length > divideeAttr.length) {
-				alert("Secondary table cannot have more attributes than primary table. Please try again.");
-				return;
-			}
-			let whereClause = "where ";
-			let hasAppended = false;
-			for (let aSec in dividerAttr) {
-				for (let aPri in divideeAttr) {
-					if (aPri.split(".")[1] === aSec.split(".")[1]) {
-						if (hasAppended) {
-							whereClause = whereClause + "AND ";
-						}
-						whereClause = whereClause + aPri + "=" + aSec + " ";
-						hasAppended = true;
-						break;
-					}
-				}
-			}
-			queryString = queryString + "where not exists (" + selectClause + fromClause + whereClause + ")";
-		}
-		else if (mode === "all") {
-			for (let table in dividerTables) {
-				let { attr } = dividerTables[table];
-				for (let attribute in attr) {
-					attribute = table + "." + attribute;
-					dividerAttr.push(attribute);
-				}
-			}
-			if (dividerAttr.length > divideeAttr.length) {
-				alert("Secondary table cannot have more attributes than primary table. Please try again.");
-				return;
-			}
-			
-		}
-			
-		queryString = queryString + ";";
-
-		//Make the post request
 		let that = this;
-		request
-		.post('/api/query')
-		.set('Content-type', 'application/x-www-form-urlencoded')
-		.query({query: queryString})
-		.end(function(err, res) {
-			console.log(res.text);
-			that.props.setData(JSON.parse(res.text));
-			that.setState({
-				queryResults: res,
-				headerNames: that.state.divideeColumns
+		request.post('/api/query')
+			.set('Content-type', 'application/x-www-form-urlencoded')
+			.query({query: queryString})
+			.end(function(err, res) {
+				that.props.setData(JSON.parse(res.text));
+				that.setState({
+					queryResults: res,
+					headerNames: that.state.dividendColumns.current
+				});
 			});
-		});
 		event.preventDefault();
 	}
-	handleDivideeTableChanges(event) {
-		let table = event.target.value
-		const newTables = this.state.divideeTables;
-		if (newTables[table] == null) {
-			newTables[table] = {attr: []};
-		} else {
-			delete newTables[table];
+	buildQuery() {
+		let divisorClause = this.buildDivisorClause(); //select+from+where
+		console.log(divisorClause);
+		let { dividendTables,divisorTables,dividendColumns,mode } = this.state;
+		let selectClause = "select distinct ";
+		let fromClause = "from ";
+		let selectAppended = false;
+		let fromAppended = false;
+		for (let table in dividendTables) {
+			if (table === "current") {
+				continue;
+			}
+			if (fromAppended) {
+				fromClause = fromClause + ",";
+			}
+			fromClause = fromClause + table + " ";
+			fromAppended = true;
 		}
-		this.setState({divideeTables: newTables});
-	}
-	handleDividerTableChanges(event) {
-		let table = event.target.value;
-		const newTables = this.state.dividerTables;
-		if (newTables[table] == null) {
-			newTables[table] = {attr: []};
-		} else {
-			delete newTables[table];
+		selectAppended = false;
+		for (let attribute in dividendColumns) {
+			if (attribute === "current") {
+				continue;
+			}
+			if (selectAppended) {
+				selectClause = selectClause + ",";
+			}
+			selectClause = selectClause + attribute + " ";
+			selectAppended = true;
 		}
-		this.setState({dividerTables: newTables});
-	}
-	handleDividerColumnChanges(event) {
-		let value = event.target.value.split(".");
-		let table = value[0];
-		let attribute = value[1];
-		const selectedTables = this.state.dividerTables;
-		let selectedColumns = selectedTables[table].attr;
-		let index = selectedColumns.indexOf(attribute);
-		if (index > -1) {
-			delete selectedColumns[index];
-		} else {
-			selectedColumns.push(attribute);
+		let queryString = selectClause + fromClause + "where not exists (";
+		if (mode === "null") {
+			return undefined;
 		}
-		this.setState({dividerTables: selectedTables});
-	}
-	handleDivideeColumnChanges(event) {
-		let value = event.target.value.split(".");
-		let table = value[0];
-		let attribute = value[1];
-		const selectedTables = this.state.divideeTables;
-		let selectedColumns = selectedTables[table].attr;
-		let index = selectedColumns.indexOf(attribute);
-		if (index > -1) {
-			delete selectedColumns[index];
-		} else {
-			selectedColumns.push(attribute);
+		if (mode === "all") {
+			fromClause = "from ";
+			let fromAppended = false;
+			for (let table in divisorTables) {
+				if (!dividendTables.include(table)) {
+					if (fromAppended) {
+						fromClause = fromClause + ",";
+					}
+					fromClause = fromClause + table + " ";
+					fromAppended = true;
+				}
+			}
+			queryString = queryString + divisorClause.selectClause + fromClause + "except ";
 		}
-		this.setState({divideeTables: selectedTables});
+		divisorClause = divisorClause.selectClause + divisorClause.fromClause + divisorClause.whereClause;
+		queryString = queryString + divisorClause + ");"
+		console.log(queryString);
+		return queryString;
 	}
-	handleModeChanges(event) {
-		let { value } = event.target;
-		this.setState({mode: value});
+	buildDivisorClause() {
+		let { divisorTables,divisorColumns,dividendColumns } = this.state;
+		let selectClause = "select distinct ";
+		let fromClause = "from ";
+		let whereClause = "where ";
+		
+		let fromAppended = false;
+		for (let table in divisorTables) {
+			if (table === "current") {
+				continue;
+			}
+			if (fromAppended) {
+				fromClause = fromClause + ",";
+			}
+			fromClause = fromClause + table;
+			fromAppended = true;
+		}
+		let whereAppended = false;
+		let selectAppended = false;
+		for (let aSec in divisorColumns) {
+			if (aSec === "current") {
+				continue;
+			}
+			let found = false;
+			for (let aPri in dividendColumns) {
+				if (aPri === "current") {
+					continue;
+				}
+				//if divisor and dividend has common attribute
+				if (aSec.split(".")[1] === aPri.split(".")[1]) {
+					if (whereAppended) {
+						whereClause = whereClause + "and ";
+					}
+					whereClause = whereClause + aSec+"="+aPri;
+					whereAppended = true;
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				if (selectAppended) {
+					selectClause = selectClause + ",";
+				}
+				selectClause = selectClause + aSec + " ";
+				selectAppended = true;
+			}
+		}
+		return { selectClause, fromClause, whereClause };
 	}
 
-	createTableOptions(mode) {
-		let items = [];
-		let { t } = this.state;
-		var selectedTables;
-		var handler;
-		if (mode === "divider") {
-			selectedTables = this.state.dividerTables.selected;
-			handler = this.handleDividerTableChanges;
+	handleTableChanges(event) {
+		const { id, value } = event.target;
+		let { dividendTables, divisorTables } = this.state;
+		if (event.id === "dividend") {
+			const newTables = dividendTables;
+			let index = newTables.current.indexOf(value);
+			if (index > -1) {
+				delete newTables.current[index];
+			} else {
+				newTables.current.push(value);
+			}
+			this.setState({dividendTables: newTables});
 		} else {
-			selectedTables = this.state.divideeTables.selected;
-			handler = this.handleDivideeTableChanges;
+			const newTables = divisorTables;
+			let index = newTables.current.indexOf(value);
+			if (index > -1) {
+				delete newTables.current[index];
+			} else {
+				newTables.current.push(value);
+			}
+			this.setState({divisorTables: newTables});
 		}
-		for (let key in t) {
-			let v = t[key];
-			items.push(<option value={key}>{v}</option>);
+	}
+	handleColumnChanges(event) {
+		const { id, value } = event.target;
+		//value is "table.attribute"
+		let { dividendColumns, divisorColumns } = this.state;
+		if (event.id === "dividend") {
+			const newColumns = dividendColumns;
+			let index = newColumns.current.indexOf(value);
+			if (index > -1) {
+				delete newColumns[value];
+				delete newColumns.current[index];
+			} else {
+				newColumns.current.push(value);
+				newColumns[value] = value;
+			}
+			this.setState({dividendColumns: newColumns});
+		} else {
+			const newColumns = divisorColumns;
+			let index = newColumns.current.indexOf(value);
+			if (index > -1) {
+				delete newColumns[value];
+				delete newColumns.current[index];
+			} else {
+				newColumns.current.push(value);
+				newColumns[value] = value;
+			}
+			this.setState({divisorColumns: newColumns});
 		}
-		return (
-			<select multiple={true} value={selectedTables} onChange={handler}>
-				{items}
-			</select>
-		);
+	}
+	handleModeChanges(event) {
+		this.setStatus({mode: event.target.value});
+	}
+
+	createTableOptions() {
+		let items = [];
+		let { tables } = this.state;
+		for (let key in tables) {
+			items.push(<option value={key}>{key}</option>);
+		}
+		return items;
 	}
 	createColumnOptions(mode) {
 		let items = [];
-		var columns, selectedTables, handler;
-		if (mode === "divider") {
-			columns = this.state.dividerColumns;
-			selectedTables = this.state.dividerTables;
-			handler = this.handleDividerColumnChanges;
-		} else {
-			columns = this.state.divideeColumns;
-			selectedTables = this.state.divideeTables;
-			handler = this.handleDivideeColumnChanges;
-		}
-		let { c } = this.state;
-		for (let key in selectedTables) {
-			let { attr } = c[key];
-			for (let i = 0; i < attr.length; i++) {
-				let a = attr[i];
-				a = key + "." + a;
-				items.push(<option value={a}>{a}</option>);
+		let { divisorTables, dividendTables,divisorColumns,dividendColumns,tables } = this.state;
+		if (mode === "divisor") {
+			const newTables = divisorTables;
+			const newColumns = divisorColumns;
+			newColumns.current = [];
+			for (let table in newTables.current) {
+				const array = tables[table].attr;
+				for (let attribute in array) {
+					attribute = table + "." + attribute;
+					newColumns.current.push(attribute);
+					items.push(<option value={attribute}>{attribute}</option>);
+				}
 			}
+			this.setState({divisorColumns: newColumns});
+			return items;
+		} else {
+			const newTables = dividendTables;
+			const newColumns = dividendColumns;
+			newColumns.current = [];
+			for (let table in newTables.current) {
+				const array = tables[table].attr;
+				for (let attribute in array) {
+					attribute = table + "." + attribute;
+					newColumns.current.push(attribute);
+					items.push(<option value={attribute}>{attribute}</option>);
+				}
+			}
+			this.setState({dividendColumns: newColumns});
+			return items;
 		}
-		return (
-			<select multiple={true} value={columns} onChange={handler}>
-				{items}
-			</select>
-		);
 	}
 	createModeOptions() {
-		return (
-			<label>
-				<select multiple={false} value={this.state.mode} onChange={this.handleModeChanges}>
-					<option value={"null"}></option>
-					<option value={"all"}>All</option>
-					<option value={"none"}>None</option>
-				</select>
-			</label>
-		);
+		let items = [];
+		items.push(<option value="null"></option>);
+		items.push(<option value="all">all of</option>);
+		items.push(<option value="none">none of</option>);
+		return items;
 	}
 	render() {
 		return (
-			<form onSubmit={this.handleSumbit}>
+			<form onSubmit={this.handleSubmit}>
 				<label>
 					<header>From</header>
-					{this.createTableOptions("dividee")}
-					{this.createColumnOptions("dividee")}
+					<select
+					  multiple={true}
+					  value={this.state.dividendTables.current}
+					  onChange={this.handleTableChanges}
+					>
+						{this.createTableOptions()}
+					</select>
+					<select
+					  id="dividend"
+					  multiple={true}
+					  value={this.state.dividendColumns.current}
+					  onChange={this.handleColumnChanges}
+					>
+						{this.createColumnOptions("dividend")}
+					</select>
 				</label>
-				<br/>
 				<label>
 					<header>that corresponds to</header>
-					{this.createModeOptions()}
+					<select
+					  multiple={false}
+					  value={this.state.mode}
+					  onChange={this.handleModeChanges}
+					>
+						{this.createModeOptions()}
+					</select>
 				</label>
-				<br/>
 				<label>
-					<header>of table</header>
-					{this.createTableOptions("divider")}
-					{this.createColumnOptions("divider")}
+					<header>the table below</header>
+					<select
+					  multiple={true}
+					  value={this.state.divisorTables.current}
+					  onChange={this.handleTableChanges}
+					>
+						{this.createTableOptions()}
+					</select>
+					<select
+					  id="divisor"
+					  multiple={true}
+					  value={this.state.divisorColumns.current}
+					  onChange={this.handleColumnChanges}
+					>
+						{this.createColumnOptions("divisor")}
+					</select>
 				</label>
-				<br/>
-				<br/>
-				<Button type="submit" outline color="success">Generate Query</Button>
-				<br/>
-				<br/>
+				<Button type="submit" color="success">Generate Query</Button>
 			</form>
 		);
 	}
