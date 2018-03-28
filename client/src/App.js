@@ -7,6 +7,7 @@ import Join from "./components/Join"
 import Delete from "./components/Delete"
 import {TabContent, TabPane, Nav, NavItem, NavLink, Button, Row, Col} from 'reactstrap';
 import Aggregate from "./components/Aggregate";
+import Update from "./components/Update";
 
 class App extends Component {
     // Initialize state
@@ -36,7 +37,7 @@ class App extends Component {
 
     setData = (data) =>{
       this.setState({data:data});
-    }
+    };
 
     // Fetch Query Results
     componentDidMount() {
@@ -131,6 +132,15 @@ class App extends Component {
                                 Deletion Queries
                             </NavLink>
                         </NavItem>
+                        <NavItem>
+                            <NavLink
+                                onClick={() => {
+                                    this.toggle('7');
+                                }}
+                            >
+                                Update Queries
+                            </NavLink>
+                        </NavItem>
                     </Nav>
                     <TabContent activeTab={this.state.activeTab}>
                         <TabPane tabId="1">
@@ -178,6 +188,14 @@ class App extends Component {
                                 <Col sm="12">
                                     <h4>Deletion Queries</h4>
                                     <Delete/>
+                                </Col>
+                            </Row>
+                        </TabPane>
+                        <TabPane tabId="7">
+                            <Row>
+                                <Col sm="12">
+                                    <h4>Update Queries</h4>
+                                    <Update setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>
