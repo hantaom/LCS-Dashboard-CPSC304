@@ -3,8 +3,9 @@ import './App.css';
 import TableView from "./components/TableView";
 import request from 'superagent';
 import Selection from "./components/Selection";
-import Join from "./components/Join"
-import Delete from "./components/Delete"
+import Join from "./components/Join";
+import Delete from "./components/Delete";
+import Division from "./components/Division";
 import { TabContent, TabPane, Nav, NavItem, NavLink, Button, Row, Col } from 'reactstrap';
 
 class App extends Component {
@@ -86,6 +87,13 @@ class App extends Component {
                   Deletion Queries
                 </NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink
+                  onClick={() => { this.toggle('4'); }}
+                >
+                  Division Queries
+                </NavLink>
+              </NavItem>
             </Nav>
             <TabContent activeTab={this.state.activeTab}>
               <TabPane tabId="1">
@@ -109,6 +117,14 @@ class App extends Component {
                 <Col sm="12">
                   <h4>Deletion Queries</h4>
                   <Delete/>
+                </Col>
+               </Row>
+              </TabPane>
+              <TabPane tabId="4">
+               <Row>
+                <Col sm="12">
+                  <h4>Division Queries</h4>
+                  <Division/>
                 </Col>
                </Row>
               </TabPane>
