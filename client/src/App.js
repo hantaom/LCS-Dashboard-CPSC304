@@ -8,6 +8,7 @@ import Delete from "./components/Delete";
 import Division from "./components/Division";
 import Aggregate from "./components/Aggregate";
 import Update from "./components/Update";
+import {TabContent, TabPane, Nav, NavItem, NavLink, Button, Row, Col} from 'reactstrap';
 
 class App extends Component {
     // Initialize state
