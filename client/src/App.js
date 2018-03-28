@@ -7,6 +7,7 @@ import Join from "./components/Join"
 import Delete from "./components/Delete"
 import {TabContent, TabPane, Nav, NavItem, NavLink, Button, Row, Col} from 'reactstrap';
 import Aggregate from "./components/Aggregate";
+import Update from "./components/Update";
 
 class App extends Component {
     // Initialize state
@@ -36,7 +37,7 @@ class App extends Component {
 
     setData = (data) =>{
       this.setState({data:data});
-    }
+    };
 
     // Fetch Query Results
     componentDidMount() {
