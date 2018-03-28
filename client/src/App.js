@@ -210,6 +210,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Update Queries</h4>
+                                    <Update/>
                                 </Col>
                             </Row>
                         </TabPane>
