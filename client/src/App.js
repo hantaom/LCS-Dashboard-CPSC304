@@ -112,7 +112,7 @@ class App extends Component {
                                     this.toggle('4');
                                 }}
                             >
-                                Aggregation Queries
+                                Insertion Queries
                             </NavLink>
                         </NavItem>
                         <NavItem>
@@ -121,7 +121,7 @@ class App extends Component {
                                     this.toggle('5');
                                 }}
                             >
-                                Nested Aggregation Queries
+                                Aggregation Queries
                             </NavLink>
                         </NavItem>
                         <NavItem>
@@ -130,13 +130,22 @@ class App extends Component {
                                     this.toggle('6');
                                 }}
                             >
-                                Deletion Queries
+                                Nested Aggregation Queries
                             </NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink
                                 onClick={() => {
                                     this.toggle('7');
+                                }}
+                            >
+                                Deletion Queries
+                            </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink
+                                onClick={() => {
+                                    this.toggle('8');
                                 }}
                             >
                                 Update Queries
@@ -171,15 +180,14 @@ class App extends Component {
                         <TabPane tabId="4">
                             <Row>
                                 <Col sm="12">
-                                    <h4>Aggregation Queries</h4>
-                                    <Aggregate/>
+                                    <h4>Insertion Queries</h4>
                                 </Col>
                             </Row>
                         </TabPane>
                         <TabPane tabId="5">
                             <Row>
                                 <Col sm="12">
-                                    <h4>Nested Aggregation Queries</h4>
+                                    <h4>Aggregation Queries</h4>
                                     <Aggregate/>
                                 </Col>
                             </Row>
@@ -187,16 +195,24 @@ class App extends Component {
                         <TabPane tabId="6">
                             <Row>
                                 <Col sm="12">
-                                    <h4>Deletion Queries</h4>
-                                    <Delete/>
+                                    <h4>Nested Aggregation Queries</h4>
+                                    <Aggregate/>
                                 </Col>
                             </Row>
                         </TabPane>
                         <TabPane tabId="7">
                             <Row>
                                 <Col sm="12">
+                                    <h4>Deletion Queries</h4>
+                                    <Delete/>
+                                </Col>
+                            </Row>
+                        </TabPane>
+                        <TabPane tabId="8">
+                            <Row>
+                                <Col sm="12">
                                     <h4>Update Queries</h4>
-                                    <Update setData = {this.setData}/>
+                                    <Update/>
                                 </Col>
                             </Row>
                         </TabPane>

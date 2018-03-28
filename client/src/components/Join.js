@@ -14,13 +14,20 @@ export default class Selection extends React.Component {
                       displayColumns: [],
                       selectedTable: '',
                       whereFormStates: []
+                        /*
+                            whereFormStates[i] = {
+                            conjunction: conjunction,
+                            selectedColumn: "",
+                            selectedCondition: "",
+                            inputtedValue: ""
+                            };
+                        */
                     }
     
         // Bind this to the function you need
         this.handleTableChanges = this.handleTableChanges.bind(this);
         this.handleColumnChanges = this.handleColumnChanges.bind(this);
         this.handleJoinChanges = this.handleJoinChanges.bind(this);
-        this.handleWhereChanges = this.handleWhereChanges.bind(this);
         this.createColumnOptions = this.createColumnOptions.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
       }
@@ -120,32 +127,13 @@ export default class Selection extends React.Component {
         this.state.joinOptions.selected = selected;
         this.setState({joinOptions: newJoinChanges});
       }
-
-      handleWhereChanges(event) {
-        const newWhereChanges = this.state.whereOptions;
-        let selected = [];
-        if (newWhereChanges.hasOwnProperty(event.target.value)) {
-            delete newWhereChanges[event.target.value];
-        } else {
-            if (!newWhereChanges.hasOwnProperty(event.target.value)) {
-                newWhereChanges[event.target.value] = event.target.value;
-            }
-        }
-        for (var key in newWhereChanges) {
-            if (newWhereChanges.hasOwnProperty(key) && key !== "selected") {
-                selected.push(key);
-            }
-        }
-        this.state.whereOptions.selected = selected;
-        this.setState({whereOptions: newWhereChanges});
-      }
       // #######################################################################################
     
       handleSubmit(event) {
         let query_tables = this.state.tableNames.selected;
         let query_columns = this.state.selectedColumns.selected;
         let query_joins = this.state.joinOptions.selected;
-        let query_filters = this.state.whereOptions.selected;
+        let query_filters = this.state.whereFormStates;
         let queryString = 'select ';
         // Generate the SELECT part of the query string
         if (query_columns.length > 0) {
@@ -158,8 +146,8 @@ export default class Selection extends React.Component {
             }
         }
         // Generate the "FROM" part of the query string
-        queryString = queryString + "from ";
         if (query_tables.length > 0) {
+            queryString = queryString + "from ";
             for (let i = 0; i <= query_tables.length - 1; i++) {
                 if (i === 0) {
                     queryString = queryString + query_tables[i] + ' ';
@@ -169,11 +157,32 @@ export default class Selection extends React.Component {
             }
         }
         // Generate the INNER JOIN part of the query string
-        queryString = queryString + "on ";
         if (query_joins.length > 0) {
+            queryString = queryString + "on ";
             for (let i = 0; i <= query_joins.length - 1; i++) {
                 if (i === 0) {
                     queryString = queryString + query_joins[i];
+                }
+            }
+        }
+        // Generate the WHERE part of the query string
+        if (query_filters.length > 0) {
+            queryString = queryString + " where ";
+            for (let i = 0; i <= query_filters.length - 1; i++) {
+                if (i === 0) {
+                    let conj = query_filters[i].conjunction;
+                    let column = query_filters[i].selectedColumn;
+                    let op = query_filters[i].selectedCondition;
+                    let value = "\'" + query_filters[i].inputtedValue + "\'";
+                    let filter = column + " " + op + " " + value;
+                    queryString = queryString + filter;
+                } else {
+                    let conj = query_filters[i].conjunction;
+                    let column = query_filters[i].selectedColumn;
+                    let op = query_filters[i].selectedCondition;
+                    let value = "\'" + query_filters[i].inputtedValue  + "\'";
+                    let filter = " " + conj + " " + column + " " + op + " " + value;
+                    queryString = queryString + filter;
                 }
             }
         }
@@ -402,9 +411,9 @@ export default class Selection extends React.Component {
                     </select>
                     <input id={i} type="text" value={formState.inputtedValue}
                            onChange={this.handleWhereInputChanges.bind(this)}/>
-                    <button type="button" value="delete" id={i}
-                            onClick={this.deleteWhereOption.bind(this)}>Delete
-                    </button>
+                    <Button color="danger" type="button" value="delete" id={i}
+                           onClick={this.deleteWhereOption.bind(this)}>Delete
+                   </Button>
 
                 </div>))}
             </label>

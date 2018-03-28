@@ -262,7 +262,7 @@ export default class Selection extends React.Component {
                             </select>
                             <input id={i} type="text" value={formState.inputtedValue}
                                    onChange={this.handleWhereInputChanges.bind(this)}/>
-                            <Button outline color="danger" type="button" value="delete" id={i}
+                            <Button color="danger" type="button" value="delete" id={i}
                                     onClick={this.deleteWhereOption.bind(this)}>Delete
                             </Button>
 

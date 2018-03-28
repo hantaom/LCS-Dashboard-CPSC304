@@ -8,50 +8,144 @@ export default class Delete extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {tableName: "default",
-                      whereOptions: {selected: []}
+        this.state = {
+                      selectedTable: '',
+                      whereFormStates: []
+                        /*
+                        whereFormStates[i] = {
+                            conjunction: conjunction,
+                            selectedColumn: "",
+                            selectedCondition: "",
+                            inputtedValue: ""
+                            };
+                        */
                     }
     
         // Bind this to the function you need
         this.handleTableChanges = this.handleTableChanges.bind(this);
-        this.handleWhereChanges = this.handleWhereChanges.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.createWhereOption = this.createWhereOption.bind(this);
       }
       
       // Functions for handling the state changes
       // #######################################################################################
       handleTableChanges(event) {
-        this.setState({tableName: event.target.value});
+        this.setState({selectedTable: event.target.value});
       }
 
-      handleWhereChanges(event) {
-        const newWhereChanges = this.state.whereOptions;
-        let selected = [];
-        if (newWhereChanges.hasOwnProperty(event.target.value)) {
-            delete newWhereChanges[event.target.value];
-        } else {
-            if (!newWhereChanges.hasOwnProperty(event.target.value)) {
-                newWhereChanges[event.target.value] = event.target.value;
-            }
+      handleWhereColumnStates(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let whereFormStates = this.state.whereFormStates;
+        let state = whereFormStates[id];
+
+        state.selectedCondition = value;
+
+        whereFormStates[id] = state;
+        console.log(JSON.stringify(state));
+
+        this.setState({whereFormStates: whereFormStates});
+
+        // let newColumnsArray = this.columnChangeHelper(newColumns, eventValue);
+    }
+
+    handleWhereColumnChanges(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let whereFormStates = this.state.whereFormStates;
+        let state = whereFormStates[id];
+
+        state.selectedColumn = value;
+        this.setState({whereFormStates: whereFormStates});
+
+    }
+
+    handleWhereInputChanges(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let whereFormStates = this.state.whereFormStates;
+        let state = whereFormStates[id];
+
+        state.inputtedValue = value;
+        this.setState({whereFormStates: whereFormStates});
+    }
+
+    deleteWhereOption(event) {
+        let forms = this.state.whereFormStates;
+        let id = event.target.id;
+        forms.splice(id, 1);
+        this.setState({whereFormStates: forms});
+    }
+
+    createWhereOption(event) {
+        
+        if (this.state.selectedTable === '') return;
+        
+            let newWhereForm = this.state.whereFormStates;
+            let conjunction = event.target.value;
+            let i = newWhereForm.length;
+        
+            if (i === 0) {
+               conjunction = "";
+             }
+        
+            newWhereForm[i] = {
+                conjunction: conjunction,
+                selectedColumn: "",
+                selectedCondition: "",
+                inputtedValue: ""
+            };
+        
+             this.setState({whereFormStates: newWhereForm});
         }
-        for (var key in newWhereChanges) {
-            if (newWhereChanges.hasOwnProperty(key) && key !== "selected") {
-                selected.push(key);
-            }
+    createColumnOptions() {
+        let selectedTable = this.state.selectedTable;
+        let columns = CONSTANTS.TABLES[selectedTable];
+    
+        let items = [];
+    
+        if (!columns) return;
+    
+        for (let i = 0; i <= columns.length - 1; i++) {
+            items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);
         }
-        this.state.whereOptions.selected = selected;
-        this.setState({whereOptions: newWhereChanges});
-      }
+    
+        return items;
+        }
+
+      
       // #######################################################################################
     
       handleSubmit(event) {
-        let query_table = this.state.tableName;
-        let query_filters = this.state.whereOptions.selected;
+        let query_table = this.state.selectedTable;
+        let query_filters = this.state.whereFormStates;
+        console.log(JSON.stringify(query_filters));
         let queryString = 'delete from ';
         // Generate the "FROM" part of the query string
-        queryString = queryString + query_table + ' ';
+        if (query_table !== '') {
+            queryString = queryString + query_table;
+        }
         // Generate the WHERE part of the query string
-        queryString = queryString + "where pl_name = 'bjergsen'";
+        if (query_filters.length > 0) {
+            queryString = queryString + " where ";
+            for (let i = 0; i <= query_filters.length - 1; i++) {
+                if (i === 0) {
+                    let conj = query_filters[i].conjunction;
+                    let column = query_filters[i].selectedColumn;
+                    let op = query_filters[i].selectedCondition;
+                    let value = "\'" + query_filters[i].inputtedValue + "\'";
+                    let filter = column + " " + op + " " + value;
+                    queryString = queryString + filter;
+                } else {
+                    let conj = query_filters[i].conjunction;
+                    let column = query_filters[i].selectedColumn;
+                    let op = query_filters[i].selectedCondition;
+                    let value = "\'" + query_filters[i].inputtedValue  + "\'";
+                    let filter = " " + conj + " " + column + " " + op + " " + value;
+                    queryString = queryString + filter;
+                }
+            }
+        }
         // Append ending of query
         queryString = queryString + ';';
         console.log(queryString);
@@ -81,39 +175,65 @@ export default class Delete extends React.Component {
         return items;
     }
 
-    createWhereOptions() {
-        let items = [];
-        let filterColumns = [];
-        for (let i = 0; i <= filterColumns.length - 1; i++) {             
-            // Dynamically set the options for tables 
-            items.push(<option value={filterColumns[i]}>{filterColumns[i]}</option>);   
-        }
-        return items;
-    }
-
     // #######################################################################################
 
     
       render() {
+
+        const button = this.state.whereFormStates.length > 0 ? (
+            <div>
+                <Button type="button" outline color="secondary" value="AND" onClick={this.createWhereOption.bind(this)}>Add
+                    AND condition</Button>
+                <Button type="button" outline color="secondary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
+                    OR condition</Button>
+            </div>
+        ) : (
+            <Button type="button" outline color="secondary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
+                Condition</Button>
+        );
         return (
           <form onSubmit={this.handleSubmit}>
             <label>
               <header>Please select the table:</header>
-              <select value={this.state.tableName} onChange={this.handleTableChanges}>
+              <select value={this.state.selectedTable} onChange={this.handleTableChanges}>
                 {this.createTableOptions()}
               </select>
             </label>
             <br/>
-            <label>
-              <header>Please select any restrictions (WHERE):</header>
-              <select multiple={true} value={this.state.whereOptions.selected} onChange={this.handleWhereChanges}>
-                {this.createWhereOptions()}
-              </select>
-            </label>
+            {this.state.whereFormStates.length > 0 &&
+                <label>
+                    <h5>Add your conditions:</h5>
+                    {this.state.whereFormStates.map((formState, i) => (
+                        <div className="whereClauses" id={i}>
+                            <div>{formState.conjunction}</div>
+                            <select id={i} value={formState.selectedColumn}
+                                    onChange={this.handleWhereColumnChanges.bind(this)}>
+                                {this.createColumnOptions()}
+                            </select>
+                            <select id={i} value={formState.selectedCondition}
+                                    onChange={this.handleWhereColumnStates.bind(this)}>
+                                <option key="lt" value="<">Less</option>
+                                <option key="gt" value=">">Greater</option>
+                                <option key="eq" value="=">Equal</option>
+                                <option key="leq" value="<=">LessEq</option>
+                                <option key="geq" value=">=">GreaterEq</option>
+                            </select>
+                            <input id={i} type="text" value={formState.inputtedValue}
+                                   onChange={this.handleWhereInputChanges.bind(this)}/>
+                            <Button color="danger" type="button" value="delete" id={i}
+                                    onClick={this.deleteWhereOption.bind(this)}>Delete
+                            </Button>
+
+                        </div>))}
+                </label>
+                }
             <br/>
-            <br/>
-            <Button type="submit" color="success">Generate Query</Button>
-            <br/>
+            {this.state.selectedTable !== '' &&
+            <div>
+                {button}
+                <Button type="submit" color="success">Generate Query</Button>
+            </div>
+            }
             <br/>
           </form>
         );
