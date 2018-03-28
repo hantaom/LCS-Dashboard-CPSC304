@@ -76,32 +76,26 @@ create table plays_in (
   primary key (game_id, ch_name, pl_name)
 );
 /* Insert Statements */
-
 insert into team (team_name, head_coach)
-	values ('Cloud9', 'Reapered');
+values ('cloud9', 'Reapered');
 insert into team (team_name, head_coach)
-	values ('Echo Fox', 'Inero');
+values ('echo-fox', 'Inero');
 insert into team (team_name, head_coach)
-	values ('Team Liquid', 'Locodoco');
+values ('team-liquid', 'Locodoco');
 insert into team (team_name, head_coach)
-	values ('100 Thieves', 'pro0lly');
+values ('100-thieves', 'pro0lly');
 insert into team (team_name, head_coach)
-	values ('Clutch Gaming', 'DLim');
+values ('clutch-gaming', 'DLim');
 insert into team (team_name, head_coach)
-	values ('Team Solo Mid', 'SSONG');
+values ('team-solomid', 'SSONG');
 insert into team (team_name, head_coach)
-	values ('Counter Logic Gaming', 'Zikz');
-
-insert into players (pl_name, team_name, position)
-values ('Doublelift', 'Team Liquid', 'adc');
-insert into players (pl_name, team_name, position)
-values ('Jensen','Cloud9','mid');
-insert into players (pl_name, team_name, position)
-values ('Fenix','Echo Fox','mid');
-insert into players (pl_name, team_name, position)
-values ('Dardoch','Echo Fox','mid');
-insert into players (pl_name, team_name, position)
-values ('Impact','Team Liquid','top');
+values ('counter-logic-gaming', 'Zikz');
+insert into team (team_name, head_coach)
+values ('flyquest', 'Zikz');
+insert into team (team_name, head_coach)
+values ('golden-guardians', 'dunno');
+insert into team (team_name, head_coach)
+values ('optic-gaming', 'forgot');
 
 insert into champion (ch_name, win_rate, pick_rate, ban_rate)
 values ('Gragas',51.4,31.6,12.9);
@@ -115,15 +109,15 @@ insert into champion (ch_name, win_rate, pick_rate, ban_rate)
 values ('Karma',45.0,23.6,13.1);
 
 insert into game (game_id,team_red,team_blue,game_time,result,duration,patch)
-values ('1','Team Solo Mid','Team Liquid',090517,'B',1680000,8.3);
+values ('1','team-solomid','team-liquid',090517,'B',1680000,8.3);
 insert into game (game_id,team_red,team_blue,game_time,result,duration,patch)
-values ('2','Echo Fox','100 Thieves',110217,'R',1800000,8.3);
+values ('2','echo-fox','100-thieves',110217,'R',1800000,8.3);
 insert into game (game_id,team_red,team_blue,game_time,result,duration,patch)
-values ('3','Team Liquid','Clutch Gaming',100117,'B',17830000,8.3);
+values ('3','team-liquid','clutch-gaming',100117,'B',17830000,8.3);
 insert into game (game_id,team_red,team_blue,game_time,result,duration,patch)
-values ('4','Cloud9','Echo Fox',120617,'B',3188000,8.3);
+values ('4','cloud9','echo-fox',120617,'B',3188000,8.3);
 insert into game (game_id,team_red,team_blue,game_time,result,duration,patch)
-values ('5','Team Solo Mid','Counter Logic Gaming',090517,'B',1380000,8.3);
+values ('5','team-solomid','counter-logic-gaming',090517,'B',1380000,8.3);
 
 insert into game_stats (game_id,first_blood,total_gold_red,total_gold_blue,total_champ_kill)
 values ('1', 'R', 60000, 70000, 15);
@@ -147,24 +141,26 @@ values ('4', 'Ryze', 'Jensen');
 insert into plays_in (game_id, ch_name, pl_name)
 values ('5', 'Azir', 'Bjergsen');
 
-insert into player_stats (pl_name, games_played, cs_per_min, assists, kda, minutes_played, cs_total, kills, deaths, kill_participation)
-values ('Doublelift', 9.1, 27, 7, 37, 81, 10.5, 2783, 266, 8);
-insert into player_stats (pl_name, games_played, cs_per_min, assists, kda, minutes_played, cs_total, kills, deaths, kill_participation)
-values ('Jensen', 9.1, 34, 9, 48, 78.1, 10.5, 3269, 311, 8);
-insert into player_stats (pl_name, games_played, cs_per_min, assists, kda, minutes_played, cs_total, kills, deaths, kill_participation)
-values ('Fenix', 9.1, 39, 10, 52, 71.1, 9.7, 3127, 321, 8);
-insert into player_stats (pl_name, games_played, cs_per_min, assists, kda, minutes_played, cs_total, kills, deaths, kill_participation)
-values ('Dardoch', 8.3, 18, 12, 81, 77.3, 8, 1593, 321, 8);
-insert into player_stats (pl_name, games_played, cs_per_min, assists, kda, minutes_played, cs_total, kills, deaths, kill_participation)
-values ('Impact', 7.6, 24, 8, 37, 74.4, 10.1, 3604, 357, 8);
+insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
+values ('cloud9', 8, 7, 1, 38.9, 105, 72, 1.46);
+insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
+values ('100-thieves',	19,	13,	6,	1.24,	192, 155, 300);
+insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
+values ('cloud9',	20,	12,	8,	1.07,	223,	209, 300);
+insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
+values ('clutch-gaming',	20,	11,	9,	1.14,	171,	150, 200);
+insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
+values ('counter-logic-gaming',	18,	7,	11,	0.89,	188,	212, 500);
+insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
+values ('echo-fox',	19,	12,	7,	1.15,	243,	212, 123);
+insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
+values ('fly-quest',	18,	6,	12,	0.72,	156,	217, 45);
+insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
+values ('golden-guardians',	18,	4,	14,	0.71,	156,	219, 984);
+insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
+values ('optic-gaming',	18,	5,	13,	0.78,	154,	198, 84);
+insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
+values ('team-liquid',	20,	12,	8,	1.14,	190,	166, 0);
+insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
+values ('team-solomid',	20,	13,	7,	1.42,	219,	154, 200);
 
-insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
-values ('Cloud9', 8, 7, 1, 38.9, 105, 72, 1.46);
-insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
-values ('Echo Fox', 8, 7, 1, 40.2, 128, 79, 1.62);
-insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
-values ('Team Liquid', 8, 5, 3, 33.2, 79, 53, 1.49);
-insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
-values ('100 Thieves', 8, 4, 4, 43.5, 63, 75, 0.84);
-insert into team_stats (team_name, games_played, wins, losses, teamkd, total_kills, total_deaths, total_assists)
-values ('Clutch Gaming', 8, 4, 4, 38.9, 71, 61, 1.16);
