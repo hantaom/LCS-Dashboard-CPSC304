@@ -40,6 +40,7 @@ export default class Selection extends React.Component {
             .query({query: that.buildQuery()})
             .end(function (err, res) {
                 console.log(res.text);
+                that.props.setData(JSON.parse(res.text));
                 that.setState({
                     queryResults: res,
                     headerNames: that.state.displaySelectedColumns
@@ -273,7 +274,7 @@ export default class Selection extends React.Component {
                 {this.state.selectedTable !== '' &&
                 <div>
                     {button}
-                    <Button type="submit" outline color="primary">Generate Query</Button>
+                    <Button type="submit" color="success">Generate Query</Button>
                 </div>
                 }
 

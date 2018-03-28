@@ -42,8 +42,9 @@ export default class Selection extends React.Component {
                 selected.push(key);
             }
         }
+        let tableSelected = event.target.value;
         this.state.tableNames.selected = selected;
-        this.setState({tableNames: newTables});
+        this.setState({selectedTable: tableSelected,tableNames: newTables});
       }
 
       handleColumnChanges(event) {
@@ -187,7 +188,12 @@ export default class Selection extends React.Component {
         .query({ query: queryString})
         .end(function(err, res){
           console.log(res.text);
-          alert(res.text);
+          that.props.setData(JSON.parse(res.text));
+          that.setState({
+            queryResults: res,
+            headerNames: that.state.displaySelectedColumns
+        });
+          // this.setState(;
         }); 
         event.preventDefault();
       }
@@ -348,6 +354,7 @@ export default class Selection extends React.Component {
             <Button type="button" outline color="secondary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
                 Condition</Button>
         );
+        const join_list = this.createJoinOptions();
         return (
           <form onSubmit={this.handleSubmit}>
             <label>
@@ -357,19 +364,23 @@ export default class Selection extends React.Component {
               </select>
             </label>
             <br/>
+            {this.state.selectedTable !== '' &&
             <label>
               <header>Please select your columns:</header>
               <select multiple={true} value={this.state.selectedColumns.selected} onChange={this.handleColumnChanges}>
                 {this.createColumnOptions()}
               </select>
             </label>
+            }
             <br/>
+            {join_list.length > 0 &&
             <label>
               <header>Please select the join condition:</header>
               <select multiple={true} value={this.state.joinOptions.selected} onChange={this.handleJoinChanges}>
                 {this.createJoinOptions()}
               </select>
             </label>
+            }
             <br/>
             {this.state.whereFormStates.length > 0 &&
             <label>

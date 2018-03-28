@@ -15,9 +15,15 @@ class App extends Component {
         super(props);
         this.state = {
             queryResults: {hello: "WORLD"},
-            activeTab: '1'
+            activeTab: '1',
+            data: []
         };
         this.toggle = this.toggle.bind(this);
+    }
+
+    componentDidUpdate() {
+      console.log("Inside App.js");
+      console.log(this.state.data);
     }
 
     toggle(tab) {
@@ -26,6 +32,10 @@ class App extends Component {
                 activeTab: tab
             });
         }
+    }
+
+    setData = (data) =>{
+      this.setState({data:data});
     }
 
     // Fetch Query Results
@@ -91,7 +101,7 @@ class App extends Component {
                                     this.toggle('3');
                                 }}
                             >
-                                Deletion Queries
+                                Division Queries
                             </NavLink>
                         </NavItem>
                         <NavItem>
@@ -100,7 +110,25 @@ class App extends Component {
                                     this.toggle('4');
                                 }}
                             >
-                                Aggreate Queries
+                                Aggregation Queries
+                            </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink
+                                onClick={() => {
+                                    this.toggle('5');
+                                }}
+                            >
+                                Nested Aggregation Queries
+                            </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink
+                                onClick={() => {
+                                    this.toggle('6');
+                                }}
+                            >
+                                Deletion Queries
                             </NavLink>
                         </NavItem>
                     </Nav>
@@ -109,7 +137,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Selection Queries</h4>
-                                    <Selection/>
+                                    <Selection setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>
@@ -117,14 +145,14 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Join Queries</h4>
-                                    <Join/>
+                                    <Join setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>
                         <TabPane tabId="3">
                             <Row>
                                 <Col sm="12">
-                                    <h4>Deletion Queries</h4>
+                                    <h4>Division Queries</h4>
                                     <Delete/>
                                 </Col>
                             </Row>
@@ -137,10 +165,26 @@ class App extends Component {
                                 </Col>
                             </Row>
                         </TabPane>
+                        <TabPane tabId="5">
+                            <Row>
+                                <Col sm="12">
+                                    <h4>Nested Aggregation Queries</h4>
+                                    <Aggregate/>
+                                </Col>
+                            </Row>
+                        </TabPane>
+                        <TabPane tabId="6">
+                            <Row>
+                                <Col sm="12">
+                                    <h4>Deletion Queries</h4>
+                                    <Delete/>
+                                </Col>
+                            </Row>
+                        </TabPane>
                     </TabContent>
                     <br/>
                 </div>
-                <TableView/>
+                <TableView data = {this.state.data}/>
             </div>
         );
     }
