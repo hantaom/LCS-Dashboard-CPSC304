@@ -11,8 +11,9 @@ export default class Selection extends React.Component {
         this.state = {tableNames: {selected: []},
                       selectedColumns: {selected: []},
                       joinOptions: {selected: []},
-                      whereOptions: {selected: []},
-                      displayColumns: []
+                      displayColumns: [],
+                      selectedTable: '',
+                      whereFormStates: []
                     }
     
         // Bind this to the function you need
@@ -41,8 +42,9 @@ export default class Selection extends React.Component {
                 selected.push(key);
             }
         }
+        let tableSelected = event.target.value;
         this.state.tableNames.selected = selected;
-        this.setState({tableNames: newTables});
+        this.setState({selectedTable: tableSelected,tableNames: newTables});
       }
 
       handleColumnChanges(event) {
@@ -63,6 +65,42 @@ export default class Selection extends React.Component {
         this.state.selectedColumns.selected = selected;
         this.setState({selectedColumns: newColumns});
       }
+
+      handleWhereColumnStates(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let whereFormStates = this.state.whereFormStates;
+        let state = whereFormStates[id];
+
+        state.selectedCondition = value;
+
+        whereFormStates[id] = state;
+
+        this.setState({whereFormStates: whereFormStates});
+
+        // let newColumnsArray = this.columnChangeHelper(newColumns, eventValue);
+    }
+
+    handleWhereColumnChanges(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let whereFormStates = this.state.whereFormStates;
+        let state = whereFormStates[id];
+
+        state.selectedColumn = value;
+        this.setState({whereFormStates: whereFormStates});
+
+    }
+
+    handleWhereInputChanges(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let whereFormStates = this.state.whereFormStates;
+        let state = whereFormStates[id];
+
+        state.inputtedValue = value;
+        this.setState({whereFormStates: whereFormStates});
+    }
 
       handleJoinChanges(event) {
         const newJoinChanges = this.state.joinOptions;
@@ -150,7 +188,12 @@ export default class Selection extends React.Component {
         .query({ query: queryString})
         .end(function(err, res){
           console.log(res.text);
-          alert(res.text);
+          that.props.setData(JSON.parse(res.text));
+          that.setState({
+            queryResults: res,
+            headerNames: that.state.displaySelectedColumns
+        });
+          // this.setState(;
         }); 
         event.preventDefault();
       }
@@ -270,20 +313,48 @@ export default class Selection extends React.Component {
         return items;
     }
 
-    createWhereOptions() {
-        let items = [];
-        let filterColumns = [];
-        for (let i = 0; i <= filterColumns.length - 1; i++) {             
-            // Dynamically set the options for tables 
-            items.push(<option value={filterColumns[i]}>{filterColumns[i]}</option>);   
+    deleteWhereOption(event) {
+        let forms = this.state.whereFormStates;
+        let id = event.target.id;
+        forms.splice(id, 1);
+        this.setState({whereFormStates: forms});
+    }
+
+    createWhereOption(event) {
+        let newWhereForm = this.state.whereFormStates;
+        let conjunction = event.target.value;
+        let i = newWhereForm.length;
+
+        if (i === 0) {
+            conjunction = "";
         }
-        return items;
+
+        newWhereForm[i] = {
+            conjunction: conjunction,
+            selectedColumn: "",
+            selectedCondition: "",
+            inputtedValue: ""
+        };
+
+        this.setState({whereFormStates: newWhereForm});
     }
 
     // #######################################################################################
 
     
       render() {
+        const button = this.state.whereFormStates.length > 0 ? (
+            <div>
+                <Button type="button" outline color="secondary" value="AND" onClick={this.createWhereOption.bind(this)}>Add
+                    AND condition</Button>
+                <Button type="button" outline color="secondary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
+                    OR condition</Button>
+            </div>
+        ) : (
+            <Button type="button" outline color="secondary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
+                Condition</Button>
+        );
+        const join_list = this.createJoinOptions();
         return (
           <form onSubmit={this.handleSubmit}>
             <label>
@@ -293,29 +364,55 @@ export default class Selection extends React.Component {
               </select>
             </label>
             <br/>
+            {this.state.selectedTable !== '' &&
             <label>
               <header>Please select your columns:</header>
               <select multiple={true} value={this.state.selectedColumns.selected} onChange={this.handleColumnChanges}>
                 {this.createColumnOptions()}
               </select>
             </label>
+            }
             <br/>
+            {join_list.length > 0 &&
             <label>
               <header>Please select the join condition:</header>
               <select multiple={true} value={this.state.joinOptions.selected} onChange={this.handleJoinChanges}>
                 {this.createJoinOptions()}
               </select>
             </label>
+            }
             <br/>
+            {this.state.whereFormStates.length > 0 &&
             <label>
-              <header>Please select any restrictions (WHERE): </header>
-              <select multiple={true} value={this.state.whereOptions.selected} onChange={this.handleWhereChanges}>
-                {this.createWhereOptions()}
-              </select>
+            <h5>Add your conditions:</h5>
+            {this.state.whereFormStates.map((formState, i) => (
+                <div className="whereClauses" id={i}>
+                    <div>{formState.conjunction}</div>
+                    <select id={i} value={formState.selectedColumn}
+                            onChange={this.handleWhereColumnChanges.bind(this)}>
+                        {this.createColumnOptions()}
+                    </select>
+                    <select id={i} value={formState.selectedCondition}
+                            onChange={this.handleWhereColumnStates.bind(this)}>
+                        <option key="lt" value="<">Less</option>
+                        <option key="gt" value=">">Greater</option>
+                        <option key="eq" value="=">Equal</option>
+                        <option key="leq" value="<=">LessEq</option>
+                        <option key="geq" value=">=">GreaterEq</option>
+                    </select>
+                    <input id={i} type="text" value={formState.inputtedValue}
+                           onChange={this.handleWhereInputChanges.bind(this)}/>
+                    <button type="button" value="delete" id={i}
+                            onClick={this.deleteWhereOption.bind(this)}>Delete
+                    </button>
+
+                </div>))}
             </label>
+            }
             <br/>
             <br/>
-            <Button type="submit" outline color="primary">Generate Query</Button>
+            {button}
+            <Button type="submit" color="success">Generate Query</Button>
             <br/>
             <br/>
           </form>
