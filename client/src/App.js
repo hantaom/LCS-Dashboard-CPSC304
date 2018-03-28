@@ -3,7 +3,6 @@ import './App.css';
 import TableView from "./components/TableView";
 import request from 'superagent';
 import Selection from "./components/Selection";
-<<<<<<< HEAD
 import Join from "./components/Join";
 import Delete from "./components/Delete";
 import Division from "./components/Division";

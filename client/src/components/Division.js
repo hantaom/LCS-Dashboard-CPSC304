@@ -9,9 +9,7 @@ export default class Division extends React.Component {
 			c: {},
 			divideeTables: {},
 			dividerTables: {},
-			selectedColumns: {selected: []},
-			divideeColumns: [],
-			dividerColumns: [],
+			mode: "null"
 		}
 
 		//Initialize table names
@@ -36,34 +34,113 @@ export default class Division extends React.Component {
 		c["plays_in"] = ["game_id","ch_name","pl_name"];
 
 		//Bind this to the function you need
-		this.handleDividerColumnChanges = this.handleDivisorColumnChanges.bind(this);
-		this.handleDivideeColumnChanges = this.handleDiviseeColumnChanges.bind(this);
+		this.handleDividerColumnChanges = this.handleDividerColumnChanges.bind(this);
+		this.handleDivideeColumnChanges = this.handleDivideeColumnChanges.bind(this);
 		this.handleModeChanges = this.handleModeChanges.bind(this);
-		this.handleDivideeTableChanges = this.handleDiviseeTableChanges.bind(this);
-		this.handleDividerTableChanges = this.handleDivisorTableChanges.bind(this);
+		this.handleDivideeTableChanges = this.handleDivideeTableChanges.bind(this);
+		this.handleDividerTableChanges = this.handleDividerTableChanges.bind(this);
 		this.createTableOptions = this.createTableOptions.bind(this);
 		this.createColumnOptions = this.createColumnOptions.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
-	handleDivideeTableChanges(event) {
-		const newTables = this.state.divideeTables;
-		if (newTables[event.target.value] == null) {
-			newTables[event.target.value] = {attr: []};
-		} else {
-			delete newTables[event.target.value];
+	handleSubmit() {
+		let queryString = "";
+		let { t,c,divideeTables,dividerTables,mode } = this.state;
+
+		if (divideeTable.length <= 0) {
+			alert("Please choose at least an attribute to display from.");
+			return;
 		}
+		if (dividerTable.length <= 0) {
+			alert("Please choose one or more attributes to compare with.");
+			return;
+		}
+		if (mode === "null") {
+			alert("Please choose either all of or none of the attributes in the secondary table should be compared with the primary table.");
+			return;
+		}
+		for (let table in divideeTables) {
+			fromClause = fromClause + table + " ";
+			for (let attribute in table) {
+				selectClause = selectClause + attribute + " ";
+			}
+		}
+		queryString = queryString + selectClause + fromClause;
+
+		//Generate ALL part
+		if (mode === "all") {
+		}
+		//Generate WHERE NOT EXISTS part
+		queryString = queryString + ";";
+
+		//Make the post request
+		let that = this;
+		request
+		.post('/api/query')
+		.set('Content-type', 'application/x-www-form-urlencoded')
+		.query({query: queryString})
+		.end(function(err, res) {
+			console.log(res.text);
+			that.props.setData(JSON.parse(res.text));
+			that.setState({
+				queryResults: res,
+				headerNames: that.state.divideeColumns
+			});
+		});
+		event.preventDefault();
+	}
+	handleDivideeTableChanges(event) {
+		let table = event.target.value
+		const newTables = this.state.divideeTables;
+		if (newTables[table] == null) {
+			newTables[table] = {attr: []};
+		} else {
+			delete newTables[table];
+		}
+		this.setState({divideeTables: newTables});
 	}
 	handleDividerTableChanges(event) {
-	}
-	handleSubmit() {
+		let table = event.target.value;
+		const newTables = this.state.dividerTables;
+		if (newTables[table] == null) {
+			newTables[table] = {attr: []};
+		} else {
+			delete newTables[table];
+		}
+		this.setState({dividerTables: newTables});
 	}
 	handleDividerColumnChanges(event) {
+		let value = event.target.value.split(".");
+		let table = value[0];
+		let attribute = value[1];
+		const selectedColumns = this.state.dividerTables[table].attr;
+		let index = selectedColumns.indexOf(attribute);
+		if (index > -1) {
+			delete selectedColumns[index];
+		} else {
+			selectedColumns.push(attribute);
+		}
+		this.setState({dividerTables[table].attr: selectedColumns});
 	}
 	handleDivideeColumnChanges(event) {
+		let value = event.target.value.split(".");
+		let table = value[0];
+		let attribute = value[1];
+		const selectedColumns = this.state.divideeTables[table].attr;
+		let index = selectedColumns.indexOf(attribute);
+		if (index > -1) {
+			delete selectedColumns[index];
+		} else {
+			selectedColumns.push(attribute);
+		}
+		this.setState({divideeTables[table].attr: selectedColumns});
 	}
 	handleModeChanges(event) {
+		let { value } = event.target;
+		this.setState({mode: value});
 	}
+
 	createTableOptions(mode) {
 		let items = [];
 		let { t } = this.state;
@@ -105,7 +182,7 @@ export default class Division extends React.Component {
 			for (let i = 0; i < attr.length; i++) {
 				array.push(key + "." + attr[i]);
 			}
-			if (selectedTables[key] == null) {
+			if (selectedTables[key] != null) {
 				columns = columns.concat(array);
 			} else {
 				columns = columns.filter( function(e1) {
@@ -154,7 +231,7 @@ export default class Division extends React.Component {
 				</label>
 				<br/>
 				<br/>
-				<Button type="submit" outline color="primary">Generate Query</Button>
+				<Button type="submit" outline color="success">Generate Query</Button>
 				<br/>
 				<br/>
 			</form>
