@@ -217,7 +217,7 @@ export default class Selection extends React.Component {
                     OR condition</Button>
             </div>
         ) : (
-            <Button type="button" outline color="secondary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
+            <Button type="button" color="primary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
                 Condition</Button>
         );
 
@@ -262,7 +262,7 @@ export default class Selection extends React.Component {
                             </select>
                             <input id={i} type="text" value={formState.inputtedValue}
                                    onChange={this.handleWhereInputChanges.bind(this)}/>
-                            <Button color="danger" type="button" value="delete" id={i}
+                            <Button color="danger" size="sm" type="button" value="delete" id={i}
                                     onClick={this.deleteWhereOption.bind(this)}>Delete
                             </Button>
 

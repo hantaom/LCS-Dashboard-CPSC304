@@ -186,7 +186,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Aggregation Queries</h4>
-                                    <Aggregate/>
+                                    <Aggregate setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>
@@ -202,7 +202,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Deletion Queries</h4>
-                                    <Delete/>
+                                    <Delete setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>
@@ -210,7 +210,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Update Queries</h4>
-                                    <Update/>
+                                    <Update setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>

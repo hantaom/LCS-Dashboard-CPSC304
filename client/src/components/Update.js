@@ -163,7 +163,7 @@ export default class Update extends React.Component {
 
         for (let i = 0; i <= columns.length - 1; i++) {
             let column = columns[i].split('.')[1];
-            items.push(<option value={column}>{column}</option>);
+            items.push(<option key={i} value={column}>{column}</option>);
         }
 
         console.log(items);
