@@ -29,11 +29,14 @@ export default class Division extends React.Component {
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.buildQuery = this.buildQuery.bind(this);
 		this.buildDivisorClause = this.buildDivisorClause.bind(this);
-		this.handleTableChanges = this.handleTableChanges.bind(this);
-		this.handleColumnChanges = this.handleColumnChanges.bind(this);
+		this.handleDivisorTableChanges = this.handleDivisorTableChanges.bind(this);
+		this.handleDivisorColumnChanges = this.handleDivisorColumnChanges.bind(this);
+		this.handleDividendTableChanges = this.handleDividendTableChanges.bind(this);
+		this.handleDividendColumnChanges = this.handleDividendColumnChanges.bind(this);
 		this.handleModeChanges = this.handleModeChanges.bind(this);
 		this.createTableOptions = this.createTableOptions.bind(this);
-		this.createColumnOptions = this.createColumnOptions.bind(this);
+		this.createDivisorColumnOptions = this.createDivisorColumnOptions.bind(this);
+		this.createDividendColumnOptions = this.createDividendColumnOptions.bind(this);
 	}
 
 	handleSubmit(event) {
@@ -120,7 +123,7 @@ export default class Division extends React.Component {
 			if (fromAppended) {
 				fromClause = fromClause + ",";
 			}
-			fromClause = fromClause + table;
+			fromClause = fromClause + table + " ";
 			fromAppended = true;
 		}
 		let whereAppended = false;
@@ -156,101 +159,103 @@ export default class Division extends React.Component {
 		return { selectClause, fromClause, whereClause };
 	}
 
-	handleTableChanges(event) {
-		const { id, value } = event.target;
-		let { dividendTables, divisorTables } = this.state;
-		if (event.id === "dividend") {
-			const newTables = dividendTables;
-			let index = newTables.current.indexOf(value);
-			if (index > -1) {
-				delete newTables.current[index];
-			} else {
-				newTables.current.push(value);
-			}
-			this.setState({dividendTables: newTables});
+	handleDividendTableChanges(event) {
+		const { value } = event.target;
+		const newTables = this.state.dividendTables;
+		let index = newTables.current.indexOf(value);
+		if (index > -1) {
+			delete newTables[value];
+			delete newTables.current[index];
 		} else {
-			const newTables = divisorTables;
-			let index = newTables.current.indexOf(value);
-			if (index > -1) {
-				delete newTables.current[index];
-			} else {
-				newTables.current.push(value);
-			}
-			this.setState({divisorTables: newTables});
+			newTables.current.push(value);
+			newTables[value] = value;
 		}
+		this.setState({dividendTables: newTables});
 	}
-	handleColumnChanges(event) {
-		const { id, value } = event.target;
-		//value is "table.attribute"
-		let { dividendColumns, divisorColumns } = this.state;
-		if (event.id === "dividend") {
-			const newColumns = dividendColumns;
-			let index = newColumns.current.indexOf(value);
-			if (index > -1) {
-				delete newColumns[value];
-				delete newColumns.current[index];
-			} else {
-				newColumns.current.push(value);
-				newColumns[value] = value;
-			}
-			this.setState({dividendColumns: newColumns});
+	handleDivisorTableChanges(event) {
+		const { value } = event.target;
+		const newTables = this.state.divisorTables;
+		let index = newTables.current.indexOf(value);
+		if (index > -1) {
+			delete newTables[value];
+			delete newTables.current[index];
 		} else {
-			const newColumns = divisorColumns;
-			let index = newColumns.current.indexOf(value);
-			if (index > -1) {
-				delete newColumns[value];
-				delete newColumns.current[index];
-			} else {
-				newColumns.current.push(value);
-				newColumns[value] = value;
-			}
-			this.setState({divisorColumns: newColumns});
+			newTables.current.push(value);
+			newTables[value] = value;
 		}
+		this.setState({divisorTables: newTables});
+	}
+	handleDividendColumnChanges(event) {
+		const { value } = event.target;
+		//value is "table.attribute"
+		const newColumns = this.state.dividendColumns;
+		let index = newColumns.current.indexOf(value);
+		if (index > -1) {
+			delete newColumns[value];
+			delete newColumns.current[index];
+		} else {
+			newColumns.current.push(value);
+			newColumns[value] = value;
+		}
+		this.setState({dividendColumns: newColumns});
+	}
+	handleDivisorColumnChanges(event) {
+		const { value } = event.target;
+		//value is "table.attribute"
+		const newColumns = this.state.divisorColumns;
+		let index = newColumns.current.indexOf(value);
+		if (index > -1) {
+			delete newColumns[value];
+			delete newColumns.current[index];
+		} else {
+			newColumns.current.push(value);
+			newColumns[value] = value;
+		}
+		this.setState({divisorColumns: newColumns});
 	}
 	handleModeChanges(event) {
-		this.setStatus({mode: event.target.value});
+		this.setState({mode: event.target.value});
 	}
 
 	createTableOptions() {
 		let items = [];
 		let { tables } = this.state;
-		for (let key in tables) {
-			items.push(<option value={key}>{key}</option>);
+		for (let value in tables) {
+			items.push(<option value={value}>{value}</option>);
 		}
 		return items;
 	}
-	createColumnOptions(mode) {
+	createDividendColumnOptions() {
 		let items = [];
-		let { divisorTables, dividendTables,divisorColumns,dividendColumns,tables } = this.state;
-		if (mode === "divisor") {
-			const newTables = divisorTables;
-			const newColumns = divisorColumns;
-			newColumns.current = [];
-			for (let table in newTables.current) {
-				const array = tables[table].attr;
-				for (let attribute in array) {
-					attribute = table + "." + attribute;
-					newColumns.current.push(attribute);
-					items.push(<option value={attribute}>{attribute}</option>);
-				}
+		let { dividendTables,dividendColumns,tables } = this.state;
+		const newTables = dividendTables;
+		const newColumns = dividendColumns;
+		for (let i = 0; i < newTables.current.length; i++) {
+			let table = newTables.current[i];
+			const array = tables[table].attr;
+			for (let j = 0; j < array.length; j++) {
+				let attribute = array[j];
+				attribute = table + "." + attribute;
+				items.push(<option value={attribute}>{attribute}</option>);
 			}
-			this.setState({divisorColumns: newColumns});
-			return items;
-		} else {
-			const newTables = dividendTables;
-			const newColumns = dividendColumns;
-			newColumns.current = [];
-			for (let table in newTables.current) {
-				const array = tables[table].attr;
-				for (let attribute in array) {
-					attribute = table + "." + attribute;
-					newColumns.current.push(attribute);
-					items.push(<option value={attribute}>{attribute}</option>);
-				}
-			}
-			this.setState({dividendColumns: newColumns});
-			return items;
 		}
+		return items;
+	}
+	createDivisorColumnOptions() {
+		let items = [];
+		let { divisorTables,divisorColumns,tables } = this.state;
+		const newTables = divisorTables;
+		const newColumns = divisorColumns;
+		for (let i = 0; i < newTables.current.length; i++) {
+			let table = newTables.current[i];
+			const array = tables[table].attr;
+			for (let j = 0; j < array.length; j++) {
+				let attribute = array[j];
+				attribute = table + "." + attribute;
+				items.push(<option value={attribute}>{attribute}</option>);
+			}
+		}
+		return items;
 	}
 	createModeOptions() {
 		let items = [];
@@ -267,17 +272,16 @@ export default class Division extends React.Component {
 					<select
 					  multiple={true}
 					  value={this.state.dividendTables.current}
-					  onChange={this.handleTableChanges}
+					  onChange={this.handleDividendTableChanges}
 					>
 						{this.createTableOptions()}
 					</select>
 					<select
-					  id="dividend"
 					  multiple={true}
 					  value={this.state.dividendColumns.current}
-					  onChange={this.handleColumnChanges}
+					  onChange={this.handleDividendColumnChanges}
 					>
-						{this.createColumnOptions("dividend")}
+						{this.createDividendColumnOptions()}
 					</select>
 				</label>
 				<label>
@@ -295,17 +299,16 @@ export default class Division extends React.Component {
 					<select
 					  multiple={true}
 					  value={this.state.divisorTables.current}
-					  onChange={this.handleTableChanges}
+					  onChange={this.handleDivisorTableChanges}
 					>
 						{this.createTableOptions()}
 					</select>
 					<select
-					  id="divisor"
 					  multiple={true}
 					  value={this.state.divisorColumns.current}
-					  onChange={this.handleColumnChanges}
+					  onChange={this.handleDivisorColumnChanges}
 					>
-						{this.createColumnOptions("divisor")}
+						{this.createDivisorColumnOptions()}
 					</select>
 				</label>
 				<Button type="submit" color="success">Generate Query</Button>
