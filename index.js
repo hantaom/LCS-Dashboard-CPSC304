@@ -6,13 +6,15 @@ const QueryHandler = require('./query.js');
 // FORMAT FOR POSTGRES
 // postgres://yourname:yourpassword@localhost:5432/nameOfDatabase
 
-const isaiahPSQL = 'postgres://wiji:isaiah@localhost:5432/lcs';
+const isaiahPSQL = 'postgres://wiji:isaiah@localhost:5432/templcs';
 const hantaoPSQL = 'postgres://hantao:Password1@localhost:5432/demodb';
 const kenPSQL = 'postgres://cjken@localhost:5432/test';
 const ianPSQL = 'postgres://postgres: @localhost:5432/LCS'
 
 const pg = require('pg');
+
 const myConnectionString = process.env.DATABASE_URL || ianPSQL; // replace this with your name/password
+
 
 const client = new pg.Client({
     connectionString: myConnectionString
@@ -20,6 +22,7 @@ const client = new pg.Client({
 
 client.connect();
 const qh = new QueryHandler(client);
+qh.getAndParsePlayerStats();
 
 // Hantao PostgreSQL code
 // ######################################################################################################

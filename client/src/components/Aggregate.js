@@ -2,17 +2,26 @@ import React from "react";
 import {CONSTANTS} from "../TableConstants";
 import TableView from "./TableView";
 import request from 'superagent';
-import { Button } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
-export default class Selection extends React.Component {
+export default class Aggregate extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {tableNames: {selected: []},
+                      modal: false,
                       selectedColumns: {selected: []},
+                      query: '',
                       joinOptions: {selected: []},
                       displayColumns: [],
                       selectedTable: '',
+                      aggregateFormStates: [],
+                        /*
+                            aggregateFormStates[i] = {
+                            selectedColumn: "",
+                            aggregateCondition: "",
+                            };
+                        */
                       whereFormStates: []
                         /*
                             whereFormStates[i] = {
@@ -30,6 +39,7 @@ export default class Selection extends React.Component {
         this.handleJoinChanges = this.handleJoinChanges.bind(this);
         this.createColumnOptions = this.createColumnOptions.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.toggle = this.toggle.bind(this);
       }
       
       // Functions for handling the state changes
@@ -128,15 +138,54 @@ export default class Selection extends React.Component {
         this.setState({joinOptions: newJoinChanges});
       }
       // #######################################################################################
-    
-      handleSubmit(event) {
-        let query_tables = this.state.tableNames.selected;
-        let query_columns = this.state.selectedColumns.selected;
-        let query_joins = this.state.joinOptions.selected;
-        let query_filters = this.state.whereFormStates;
-        let queryString = 'select ';
-        // Generate the SELECT part of the query string
-        if (query_columns.length > 0) {
+
+      generateSelectQueryString(queryString, query_columns, aggregates) {
+        if (aggregates.length > 0) {
+            for (let i = 0; i <= query_columns.length - 1; i++) {
+                if (i === query_columns.length - 1) {
+                    // TODO: Check for aggregation conditions
+                    let table_column = query_columns[i];
+                    for (let j = 0; j <= aggregates.length - 1; j++) {
+                        let aggregate = aggregates[j];
+                        if (aggregate.selectedColumn === table_column) {
+                            let condition = aggregate.aggregateCondition;
+                            if (condition === "avg") {
+                                table_column = "avg(" + table_column + ")";
+                            } else if (condition === "min") {
+                                table_column = "min(" + table_column + ")";
+                            } else if (condition === "max") {
+                                table_column = "max(" + table_column + ")";
+                            } else if (condition === "sum") {
+                                table_column = "sum(" + table_column + ")";
+                            } else if (condition === "count") {
+                                table_column = "count(" + table_column + ")";
+                            }
+                        }
+                    }
+                    queryString = queryString + table_column + ' ';
+                } else {
+                    let table_column = query_columns[i];
+                    for (let j = 0; j <= aggregates.length - 1; j++) {
+                        let aggregate = aggregates[j];
+                        if (aggregate.selectedColumn === table_column) {
+                            let condition = aggregate.aggregateCondition;
+                            if (condition === "avg") {
+                                table_column = "avg(" + table_column + ")";
+                            } else if (condition === "min") {
+                                table_column = "min(" + table_column + ")";
+                            } else if (condition === "max") {
+                                table_column = "max(" + table_column + ")";
+                            } else if (condition === "sum") {
+                                table_column = "sum(" + table_column + ")";
+                            } else if (condition === "count") {
+                                table_column = "count(" + table_column + ")";
+                            }
+                        }
+                    }
+                    queryString = queryString + table_column + ", ";
+                }
+            }
+        } else {
             for (let i = 0; i <= query_columns.length - 1; i++) {
                 if (i === query_columns.length - 1) {
                     queryString = queryString + query_columns[i] + ' ';
@@ -144,6 +193,22 @@ export default class Selection extends React.Component {
                     queryString = queryString + query_columns[i] + ", ";
                 }
             }
+        }
+        return queryString
+      }
+      // #######################################################################################
+    
+      handleSubmit(event) {
+        let query_tables = this.state.tableNames.selected;
+        let query_columns = this.state.selectedColumns.selected;
+        let aggregates = this.state.aggregateFormStates;
+        let query_filters = this.state.whereFormStates;
+        let query_joins = this.state.joinOptions.selected;
+        console.log(JSON.stringify(aggregates));
+        let queryString = 'select ';
+        // Generate the SELECT part of the query string
+        if (query_columns.length > 0) {
+            queryString = this.generateSelectQueryString(queryString, query_columns,aggregates);
         }
         // Generate the "FROM" part of the query string
         if (query_tables.length > 0) {
@@ -198,11 +263,12 @@ export default class Selection extends React.Component {
         .end(function(err, res){
           console.log(res.text);
           that.props.setData(JSON.parse(res.text));
+          that.toggle();
           that.setState({
             queryResults: res,
-            headerNames: that.state.displaySelectedColumns
+            headerNames: that.state.displaySelectedColumns,
+            query: queryString
         });
-          // this.setState(;
         }); 
         event.preventDefault();
       }
@@ -317,7 +383,7 @@ export default class Selection extends React.Component {
         }
         for (let i = 0; i <= joinFilters.length - 1; i++) {             
             // Dynamically set the options for tables 
-            items.push(<option value={joinFilters[i]}>{joinFilters[i]}</option>);   
+            items.push(<option key={i} value={joinFilters[i]}>{joinFilters[i]}</option>);   
         }
         return items;
     }
@@ -348,22 +414,91 @@ export default class Selection extends React.Component {
         this.setState({whereFormStates: newWhereForm});
     }
 
+    // Aggregation handlers
+
+    createAggregationOption(event) {
+        let newAggregateForm = this.state.aggregateFormStates;
+        let conjunction = event.target.value;
+        let i = newAggregateForm.length;
+
+        newAggregateForm[i] = {
+            selectedColumn: "",
+            aggregateCondition: ""
+        };
+
+        this.setState({aggregateFormStates: newAggregateForm});
+    }
+
+    handleAggregateStates(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let aggregateFormStates = this.state.aggregateFormStates;
+        let state = aggregateFormStates[id];
+
+        state.aggregateCondition = value;
+
+        aggregateFormStates[id] = state;
+
+        this.setState({aggregateFormStates: aggregateFormStates});
+    }
+
+    handleAggregateChanges(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let aggregateFormStates = this.state.aggregateFormStates;
+        let state = aggregateFormStates[id];
+
+        state.selectedColumn = value;
+        this.setState({aggregateFormStates: aggregateFormStates});
+
+    }
+
+    createAggregationColumns() {
+
+        let items = [];
+        let columns = this.state.selectedColumns.selected;
+
+        for (let i = 0; i <= columns.length - 1; i++) {             
+            items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);   
+        }
+
+       return items;
+    }
+
+    deleteAggregateOption(event) {
+        let forms = this.state.aggregateFormStates;
+        let id = event.target.id;
+        forms.splice(id, 1);
+        this.setState({aggregateFormStates: forms});
+    }
+
+    toggle() {
+        this.setState({
+          modal: !this.state.modal
+        });
+      }
+
     // #######################################################################################
 
     
       render() {
         const button = this.state.whereFormStates.length > 0 ? (
             <div>
-                <Button type="button" outline color="secondary" value="AND" onClick={this.createWhereOption.bind(this)}>Add
+                <Button type="button" outline color="primary" value="AND" onClick={this.createWhereOption.bind(this)}>Add
                     AND condition</Button>
-                <Button type="button" outline color="secondary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
+                <Button type="button" outline color="primary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
                     OR condition</Button>
             </div>
         ) : (
             <Button type="button" color="primary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
                 Condition</Button>
         );
-        const join_list = this.createJoinOptions();
+
+        const aggregateButton = this.state.selectedColumns.selected.length > 0 && (
+            <Button type="button" color="primary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
+                Condition</Button>
+        );
+        let join_list = this.createJoinOptions();
         return (
           <form onSubmit={this.handleSubmit}>
             <label>
@@ -381,6 +516,36 @@ export default class Selection extends React.Component {
               </select>
             </label>
             }
+            <br/>
+            {this.state.aggregateFormStates.length > 0 &&
+                <label>
+                <h5> Please Select any Aggregates </h5>
+                {this.state.aggregateFormStates.map((formState, i) => (
+                    <div className="aggregateClasses" id={i}>
+                        <select id={i} value={formState.selectedColumn}
+                                onChange={this.handleAggregateChanges.bind(this)}>
+                            {this.createAggregationColumns()}
+                        </select>
+                        <select id={i} value={formState.aggregateCondition}
+                                onChange={this.handleAggregateStates.bind(this)}>
+                            <option key="avg" value="avg">AVG</option>
+                            <option key="min" value="min">MIN</option>
+                            <option key="max" value="max">MAX</option>
+                            <option key="sum" value="sum">SUM</option>
+                            <option key="count" value="count">COUNT</option>
+                        </select>
+                        <Button color="danger" type="button" size="sm" value="delete" id={i}
+                           onClick={this.deleteAggregateOption.bind(this)}>Delete
+                        </Button>
+                    </div>))}
+                    <br/>
+                </label>
+                }
+                <br/>
+                {this.state.selectedColumns.selected.length > 0 && 
+                        <Button type="button" color="warning" value="aggregate" onClick={this.createAggregationOption.bind(this)}>
+                        Add Aggregation</Button>
+                    }
             <br/>
             {join_list.length > 0 &&
             <label>
@@ -411,10 +576,9 @@ export default class Selection extends React.Component {
                     </select>
                     <input id={i} type="text" value={formState.inputtedValue}
                            onChange={this.handleWhereInputChanges.bind(this)}/>
-                    <Button color="danger" size="sm" type="button" value="delete" id={i}
+                    <Button color="danger" type="button" size="sm" value="delete" id={i}
                            onClick={this.deleteWhereOption.bind(this)}>Delete
                    </Button>
-
                 </div>))}
             </label>
             }
@@ -423,6 +587,17 @@ export default class Selection extends React.Component {
             {button}
             <Button type="submit" color="success">Generate Query</Button>
             <br/>
+            <div>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <ModalHeader toggle={this.toggle}>Your Query: </ModalHeader>
+                    <ModalBody>
+                        {this.state.query}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={this.toggle}>Ok!</Button>
+                    </ModalFooter>
+                </Modal>
+            </div>
             <br/>
           </form>
         );

@@ -3,17 +3,17 @@ import request from "superagent";
 import {CONSTANTS} from "../TableConstants";
 import {Button} from 'reactstrap';
 
-export default class Selection extends React.Component {
+export default class Update extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            selectedColumns: {},
+            selectedColumn: '',
             selectedTable: '',
-            displayColumns: [],
-            displaySelectedColumns: [],
+            newValue: '',
 
-            whereFormStates: []
+            whereFormStates: [],
+            constraintForms: []
             /*
              whereFormStates[i] = {
                 conjunction: conjunction,
@@ -39,11 +39,13 @@ export default class Selection extends React.Component {
             .set('Content-Type', 'application/x-www-form-urlencoded')
             .query({query: that.buildQuery()})
             .end(function (err, res) {
+                if (err) throw err;
+
                 console.log(res.text);
                 that.props.setData(JSON.parse(res.text));
                 that.setState({
                     queryResults: res,
-                    headerNames: that.state.displaySelectedColumns
+                    headerNames: [that.state.selectedColumn]
                 });
             });
         event.preventDefault();
@@ -53,35 +55,18 @@ export default class Selection extends React.Component {
         let tableSelected = event.target.value;
         this.setState({
             selectedTable: tableSelected,
-            selectedColumns: {},
-            displayColumns: [],
-            displaySelectedColumns: []
+            selectedColumn: '',
         });
     }
 
     handleColumnChanges(event) {
-        let newColumns = this.state.selectedColumns;
         let eventValue = event.target.value;
-
-        let newColumnsArray = this.columnChangeHelper(newColumns, eventValue);
-
-        this.setState({displaySelectedColumns: newColumnsArray});
+        this.setState({selectedColumn: eventValue});
     }
 
-    columnChangeHelper(newColumns, eventValue) {
-        if (newColumns[eventValue]) {
-            delete newColumns[eventValue];
-        } else {
-            newColumns[eventValue] = eventValue;
-        }
-
-        let newColumnsArray = [];
-
-        Object.keys(newColumns).forEach(key => {
-            newColumnsArray.push(newColumns[key]);
-        });
-
-        return newColumnsArray;
+    handleValueInput(event) {
+        let newValue = event.target.value;
+        this.setState({newValue: newValue});
     }
 
     handleWhereColumnStates(event) {
@@ -95,8 +80,6 @@ export default class Selection extends React.Component {
         whereFormStates[id] = state;
 
         this.setState({whereFormStates: whereFormStates});
-
-        // let newColumnsArray = this.columnChangeHelper(newColumns, eventValue);
     }
 
     handleWhereColumnChanges(event) {
@@ -107,7 +90,6 @@ export default class Selection extends React.Component {
 
         state.selectedColumn = value;
         this.setState({whereFormStates: whereFormStates});
-
     }
 
     handleWhereInputChanges(event) {
@@ -127,27 +109,91 @@ export default class Selection extends React.Component {
         this.setState({whereFormStates: forms});
     }
 
+    handleAddOrDropConstraint(event) {
+        let addOrDrop = event.target.value;
+        let id = event.target.id;
+        let constraintForms = this.state.constraintForms;
+        let state = constraintForms[id];
+        state.conjunction = addOrDrop;
+        constraintForms[id] = state;
+
+        this.setState({constraintForms: constraintForms});
+    }
+
+    handleConstraintColumnStates(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let constraintForms = this.state.constraintForms;
+        let state = constraintForms[id];
+
+        state.selectedCondition = value;
+
+        constraintForms[id] = state;
+
+        this.setState({constraintForms: constraintForms});
+    }
+
+    handleConstraintColumnChanges(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let constraintForms = this.state.constraintForms;
+        let state = constraintForms[id];
+
+        state.selectedColumn = value;
+        this.setState({constraintForms: constraintForms});
+    }
+
+    handleConstraintInputChanges(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let constraintForms = this.state.constraintForms;
+        let state = constraintForms[id];
+
+        state.inputtedValue = value;
+        this.setState({constraintForms: constraintForms});
+    }
+
+    deleteConstraintOption(event) {
+        let forms = this.state.constraintForms;
+        let id = event.target.id;
+        forms.splice(id, 1);
+        this.setState({constraintForms: forms});
+    }
+
     buildQuery() {
         let selectedTable = this.state.selectedTable;
-        let selectedColumns = this.state.displaySelectedColumns.toString();
-        let whereQuery = this.state.whereFormStates;
-        let WHERE = "";
+        let selectedColumn = this.state.selectedColumn;
+        let newValue = this.state.newValue;
 
-        whereQuery.map((query, i) => {
+        let whereForm = this.state.whereFormStates;
+        let constraintForm = this.state.constraintForms;
+
+        let whereQuery = "";
+        let updateQuery = selectedColumn && newValue ? ` UPDATE ${selectedTable} SET ${selectedColumn} = \'${newValue}\'` : '';
+        let constraintQuery = constraintForm.length > 0 ?
+            `ALTER TABLE ${selectedTable} `: '';
+
+        constraintForm.map((query, i) => {
+            constraintQuery +=`ADD CHECK (${query.selectedColumn}
+                ${query.selectedCondition}
+                ${query.inputtedValue});`
+        });
+
+
+        whereForm.map((query, i) => {
             if (i !== 0) {
-                WHERE += " " + query.conjunction
+                whereQuery += " " + query.conjunction
             }
 
-            WHERE += " " + query.selectedColumn + " " + query.selectedCondition + " " + "\'" + query.inputtedValue + "\'";
+            whereQuery += " " + query.selectedColumn + " " + query.selectedCondition + " " + "\'" + query.inputtedValue + "\'";
 
         });
 
-        selectedColumns = selectedColumns.length > 0 ? selectedColumns : '*';
+        let query = constraintQuery + updateQuery;
 
-        let query = `SELECT ${selectedColumns} FROM ${selectedTable}`;
-
-        if (WHERE !== "") {
-            query += " WHERE" + WHERE;
+        if (whereQuery !== "") {
+            whereQuery = " WHERE" + whereQuery;
+            query += whereQuery;
         }
 
         console.log(query);
@@ -178,7 +224,8 @@ export default class Selection extends React.Component {
         if (!columns) return;
 
         for (let i = 0; i <= columns.length - 1; i++) {
-            items.push(<option value={columns[i]}>{columns[i]}</option>);
+            let column = columns[i].split('.')[1];
+            items.push(<option key={i} value={column}>{column}</option>);
         }
 
         console.log(items);
@@ -208,6 +255,28 @@ export default class Selection extends React.Component {
         this.setState({whereFormStates: newWhereForm});
     }
 
+    createConstraintOption(event) {
+
+        if (this.state.selectedTable === '') return;
+
+        let constraintForms = this.state.constraintForms;
+        let conjunction = event.target.value;
+        let i = constraintForms.length;
+
+        if (i === 0) {
+            conjunction = "";
+        }
+
+        constraintForms[i] = {
+            conjunction: conjunction,
+            selectedColumn: "",
+            selectedCondition: "",
+            inputtedValue: ""
+        };
+
+        this.setState({constraintForms: constraintForms});
+    }
+
     render() {
         const button = this.state.whereFormStates.length > 0 ? (
             <div>
@@ -216,28 +285,77 @@ export default class Selection extends React.Component {
                 <Button type="button" outline color="secondary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
                     OR condition</Button>
             </div>
-        ) : (
-            <Button type="button" color="primary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
-                Condition</Button>
+        ) : (<div>
+                <Button type="button" outline color="secondary" value="OR"
+                        onClick={this.createConstraintOption.bind(this)}>Add
+                    Check</Button>
+                <Button type="button" outline color="secondary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
+                    Condition</Button>
+            </div>
+
+
         );
 
         return (
             <form onSubmit={this.handleSubmit}>
                 <label>
-                    <h5>Table:</h5>
-                    <select multiple={true} value={this.state.tableNames} onChange={this.handleTableChanges}>
+                    <h5>Choose a table to Update:</h5>
+                    <select value={this.state.tableNames} onChange={this.handleTableChanges}>
                         {this.createTableOptions()}
                     </select>
                 </label>
                 <br/>
                 <br/>
+                {this.state.constraintForms.length > 0 &&
+                <label>
+                    <h5>Add/Remove your table constraints:</h5>
+                    {this.state.constraintForms.map((formState, i) => (
+                        <div className="constraints" id={i}>
+                            <select id={i} value={formState.conjunction}
+                                    onChange={this.handleAddOrDropConstraint.bind(this)}>
+                                <option key="add" value="add">Add</option>
+                                <option key="drop" value="drop">Drop</option>
+                            </select>
+                            <select id={i} value={formState.selectedColumn}
+                                    onChange={this.handleConstraintColumnChanges.bind(this)}>
+                                {this.createColumnOptions()}
+                            </select>
+                            <select id={i} value={formState.selectedCondition}
+                                    onChange={this.handleConstraintColumnStates.bind(this)}>
+                                <option key="lt" value="<">Less</option>
+                                <option key="gt" value=">">Greater</option>
+                                <option key="eq" value="=">Equal</option>
+                                <option key="leq" value="<=">LessEq</option>
+                                <option key="geq" value=">=">GreaterEq</option>
+                            </select>
+                            <input id={i} type="text" value={formState.inputtedValue}
+                                   onChange={this.handleConstraintInputChanges.bind(this)}/>
+                            <Button outline color="danger" type="button" value="delete" id={i}
+                                    onClick={this.deleteConstraintOption.bind(this)}>Delete
+                            </Button>
+
+                        </div>))}
+                </label>
+                }
+                <br/>
+                <br/>
                 {this.state.selectedTable !== '' &&
                 <label>
-                    <h5>Please select data from table:</h5>
-                    <select multiple={true} value={this.state.displaySelectedColumns}
+                    <h5>Choose a column to Update</h5>
+                    <select value={this.state.selectedColumn}
                             onChange={this.handleColumnChanges}>
                         {this.createColumnOptions()}
                     </select>
+                </label>
+                }
+                <br/>
+                <br/>
+                {this.state.selectedColumn !== '' &&
+                <label>
+                    <h5>Set new value</h5>
+                    <input value={this.state.newValue}
+                           onChange={this.handleValueInput.bind(this)}>
+                    </input>
                 </label>
                 }
                 <br/>
@@ -262,7 +380,7 @@ export default class Selection extends React.Component {
                             </select>
                             <input id={i} type="text" value={formState.inputtedValue}
                                    onChange={this.handleWhereInputChanges.bind(this)}/>
-                            <Button color="danger" size="sm" type="button" value="delete" id={i}
+                            <Button outline color="danger" type="button" value="delete" id={i}
                                     onClick={this.deleteWhereOption.bind(this)}>Delete
                             </Button>
 

@@ -20,21 +20,22 @@ render()
             ban_rate: "Ban Rate", game_id: "Game ID", team_red: "Team Red", team_blue: "Team Blue", time: "Date", result: "Result", duration: "Duration",
             patch: "Patch Version", first_blood: "First Blood", total_gold_red: "Total Gold (Red)", total_gold_blue: "Total Gold (Blue)", total_champ_kills: "Total Kills (Champions)",
             head_coach: "Head Coach", wins: "Wins", losses: "Losses", teamkd: "Team KDA", total_kills: "Total Kills", total_deaths: "Total Deaths", total_assists: "Total Assists",
-            avg_game_time: "Average Game Time"
+            avg_game_time: "Average Game Time", count: "Count", min: "Min", max: "Max", sum: "Sum", avg: "Average"
         };
-        var data = [{"id":45,"pl_name":"Impact","position":"toplane","playerSlug":"impact","team":"TL","games_played":20,
-        "kda":3.6285714285714286,"kills":38,"deaths":35,"assists":89,"kill_participation":0.6684210526315789,"cs_per_min":8.513325012847808,
-        "cs_total":5798,"minutes_played":681,"teamSlug":"team-liquid", "rating":9}];
+        var data = this.props.data;
+        console.log("Inside TableView");
 
         var columns = {columns:[]};
 
         // Populate columns with proper headers
         {
-            Object.keys(data[0]).forEach((key) => {
-            console.log(key);
-            if(headerNames[key]){
-                columns["columns"].push({Header: headerNames[key], accessor: key})};
-            });
+            if (data[0]) {
+                Object.keys(data[0]).forEach((key) => {
+                console.log(key);
+                if(headerNames[key]){
+                    columns["columns"].push({Header: headerNames[key], accessor: key})};
+                }); 
+            }
         }
         console.log(columns);
         return (
