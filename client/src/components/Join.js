@@ -2,30 +2,31 @@ import React from "react";
 import {CONSTANTS} from "../TableConstants";
 import './Login.css';
 import request from 'superagent';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import {Button, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 
 export default class Selection extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {tableNames: {selected: []},
-                      selectedColumns: {selected: []},
-                      joinOptions: {selected: []},
-                      displayColumns: [],
-                      selectedTable: '',
-                      query: '',
-                      modal: false,
-                      whereFormStates: []
-                        /*
-                            whereFormStates[i] = {
-                            conjunction: conjunction,
-                            selectedColumn: "",
-                            selectedCondition: "",
-                            inputtedValue: ""
-                            };
-                        */
-                    }
-    
+        this.state = {
+            tableNames: {selected: []},
+            selectedColumns: {selected: []},
+            joinOptions: {selected: []},
+            displayColumns: [],
+            selectedTable: '',
+            query: '',
+            modal: false,
+            whereFormStates: []
+            /*
+                whereFormStates[i] = {
+                conjunction: conjunction,
+                selectedColumn: "",
+                selectedCondition: "",
+                inputtedValue: ""
+                };
+            */
+        }
+
         // Bind this to the function you need
         this.handleTableChanges = this.handleTableChanges.bind(this);
         this.handleColumnChanges = this.handleColumnChanges.bind(this);
@@ -33,11 +34,11 @@ export default class Selection extends React.Component {
         this.createColumnOptions = this.createColumnOptions.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.toggle = this.toggle.bind(this);
-      }
-      
-      // Functions for handling the state changes
-      // #######################################################################################
-      handleTableChanges(event) {
+    }
+
+    // Functions for handling the state changes
+    // #######################################################################################
+    handleTableChanges(event) {
         const newTables = this.state.tableNames;
         let selected = [];
         if (newTables.hasOwnProperty(event.target.value)) {
@@ -54,10 +55,10 @@ export default class Selection extends React.Component {
         }
         let tableSelected = event.target.value;
         this.state.tableNames.selected = selected;
-        this.setState({selectedTable: tableSelected,tableNames: newTables});
-      }
+        this.setState({selectedTable: tableSelected, tableNames: newTables});
+    }
 
-      handleColumnChanges(event) {
+    handleColumnChanges(event) {
         const newColumns = this.state.selectedColumns;
         let selected = [];
         if (newColumns.hasOwnProperty(event.target.value)) {
@@ -74,9 +75,9 @@ export default class Selection extends React.Component {
         }
         this.state.selectedColumns.selected = selected;
         this.setState({selectedColumns: newColumns});
-      }
+    }
 
-      handleWhereColumnStates(event) {
+    handleWhereColumnStates(event) {
         let value = event.target.value;
         let id = event.target.id;
         let whereFormStates = this.state.whereFormStates;
@@ -112,7 +113,7 @@ export default class Selection extends React.Component {
         this.setState({whereFormStates: whereFormStates});
     }
 
-      handleJoinChanges(event) {
+    handleJoinChanges(event) {
         const newJoinChanges = this.state.joinOptions;
         let selected = [];
         if (newJoinChanges.hasOwnProperty(event.target.value)) {
@@ -129,10 +130,11 @@ export default class Selection extends React.Component {
         }
         this.state.joinOptions.selected = selected;
         this.setState({joinOptions: newJoinChanges});
-      }
-      // #######################################################################################
-    
-      handleSubmit(event) {
+    }
+
+    // #######################################################################################
+
+    handleSubmit(event) {
         let query_tables = this.state.tableNames.selected;
         let query_columns = this.state.selectedColumns.selected;
         let query_joins = this.state.joinOptions.selected;
@@ -183,7 +185,7 @@ export default class Selection extends React.Component {
                     let conj = query_filters[i].conjunction;
                     let column = query_filters[i].selectedColumn;
                     let op = query_filters[i].selectedCondition;
-                    let value = "\'" + query_filters[i].inputtedValue  + "\'";
+                    let value = "\'" + query_filters[i].inputtedValue + "\'";
                     let filter = " " + conj + " " + column + " " + op + " " + value;
                     queryString = queryString + filter;
                 }
@@ -191,32 +193,32 @@ export default class Selection extends React.Component {
         }
         // Append ending of query
         queryString = queryString + ";";
-          console.log(queryString);
-          // Make the post request
-          let that = this;
-          that.props.sendRequest(queryString, this)
-              .then(function (res) {
-                  that.setState({
-                      queryResults: res,
-                      headerNames: that.state.displaySelectedColumns,
-                      query: queryString
-                  });
-                  // this.setState(;
-              });
-          event.preventDefault();
-      }
+        console.log(queryString);
+        // Make the post request
+        let that = this;
+        that.props.sendRequest(queryString, this)
+            .then(function(res) {
+                that.setState({
+                    queryResults: res,
+                    headerNames: that.state.displaySelectedColumns,
+                    query: queryString
+                });
+            });
+        event.preventDefault();
+    }
 
-      // Code that fills what is inside the selection boxes
-      // #######################################################################################
-      createTableOptions() {
+    // Code that fills what is inside the selection boxes
+    // #######################################################################################
+    createTableOptions() {
         let items = [];
         let tables = ["team", "players", "champion", "game", "game_stats", "player_stats", "team_stats", "plays_in"];
-        for (let i = 0; i <= tables.length - 1; i++) {             
+        for (let i = 0; i <= tables.length - 1; i++) {
             // Dynamically set the options for tables 
-            items.push(<option key={i} value={tables[i]}>{tables[i]}</option>);   
+            items.push(<option key={i} value={tables[i]}>{tables[i]}</option>);
         }
         return items;
     }
+
     createColumnOptions() {
         let items = [];
         let columns = this.state.displayColumns;
@@ -226,9 +228,9 @@ export default class Selection extends React.Component {
         } else {
             let toRemove = ["team.team_name", "team.head_coach"];
             if (columns.length > 1) {
-                columns = columns.filter( function( el ) {
-                    return !toRemove.includes( el );
-                  });
+                columns = columns.filter(function (el) {
+                    return !toRemove.includes(el);
+                });
             }
         }
         if (selectedTable.hasOwnProperty("players")) {
@@ -236,8 +238,8 @@ export default class Selection extends React.Component {
         } else {
             let toRemove = ["players.pl_name", "players.position", "players.team_name", "players.rating"];
             if (columns.length > 1) {
-                columns = columns.filter( function( el ) {
-                    return toRemove.indexOf( el ) < 0;
+                columns = columns.filter(function (el) {
+                    return toRemove.indexOf(el) < 0;
                 });
             }
         }
@@ -245,48 +247,48 @@ export default class Selection extends React.Component {
             columns = columns.concat(["champion.ch_name", "champion.win_rate", "champion.pick_rate", "champion.ban_rate"]);
         } else {
             let toRemove = ["champion.ch_name", "champion.win_rate", "champion.pick_rate", "champion.ban_rate"];
-            columns = columns.filter( function( el ) {
-                return toRemove.indexOf( el ) < 0;
+            columns = columns.filter(function (el) {
+                return toRemove.indexOf(el) < 0;
             });
         }
         if (selectedTable.hasOwnProperty("game")) {
             columns = columns.concat(["game.game_id", "game.team_red", "game.team_blue", "game.game_time", "game.result", "game.duration", "game.patch"]);
         } else {
             let toRemove = ["game.game_id", "game.team_red", "game.team_blue", "game.game_time", "game.result", "game.duration", "game.patch"];
-            columns = columns.filter( function( el ) {
-                return toRemove.indexOf( el ) < 0;
+            columns = columns.filter(function (el) {
+                return toRemove.indexOf(el) < 0;
             });
         }
         if (selectedTable.hasOwnProperty("game_stats")) {
             columns = columns.concat(["game_stats.game_id", "game_stats.first_blood", "game_stats.total_gold_red", "game_stats.total_gold_blue", "game_stats.total_champ_kill"]);
         } else {
             let toRemove = ["game_stats.game_id", "game_stats.first_blood", "game_stats.total_gold_red", "game_stats.total_gold_blue", "game_stats.total_champ_kill"];
-            columns = columns.filter( function( el ) {
-                return toRemove.indexOf( el ) < 0;
+            columns = columns.filter(function (el) {
+                return toRemove.indexOf(el) < 0;
             });
         }
         if (selectedTable.hasOwnProperty("player_stats")) {
             columns = columns.concat(["player_stats.pl_name", "player_stats.games_played", "player_stats.cs_per_min", "player_stats.assists", "player_stats.kda", "player_stats.minutes_played", "player_stats.cs_total", "player_stats.kills", "player_stats.deaths", "player_stats.kill_participation"]);
         } else {
             let toRemove = ["player_stats.pl_name", "player_stats.games_played", "player_stats.cs_per_min", "player_stats.assists", "player_stats.kda", "player_stats.minutes_played", "player_stats.cs_total", "player_stats.kills", "player_stats.deaths", "player_stats.kill_participation"];
-            columns = columns.filter( function( el ) {
-                return toRemove.indexOf( el ) < 0;
+            columns = columns.filter(function (el) {
+                return toRemove.indexOf(el) < 0;
             });
         }
         if (selectedTable.hasOwnProperty("team_stats")) {
             columns = columns.concat(["team_stats.team_name", "team_stats.games_played", "team_stats.wins", "team_stats.losses", "team_stats.teamkd", "team_stats.total_kills", "team_stats.total_deaths", "team_stats.total_deaths", "team_stats.total_assists", "team_stats.avg_game_time"]);
         } else {
             let toRemove = ["team_stats.team_name", "team_stats.games_played", "team_stats.wins", "team_stats.losses", "team_stats.teamkd", "team_stats.total_kills", "team_stats.total_deaths", "team_stats.total_deaths", "team_stats.total_assists", "team_stats.avg_game_time"];
-            columns = columns.filter( function( el ) {
-                return toRemove.indexOf( el ) < 0;
+            columns = columns.filter(function (el) {
+                return toRemove.indexOf(el) < 0;
             });
         }
         if (selectedTable.hasOwnProperty("plays_in")) {
             columns = columns.concat(["plays_in.game_id", "plays_in.ch_name", "plays_in.pl_name"]);
         } else {
             let toRemove = ["plays_in.game_id", "plays_in.ch_name", "plays_in.pl_name"]
-            columns = columns.filter( function( el ) {
-                return toRemove.indexOf( el ) < 0;
+            columns = columns.filter(function (el) {
+                return toRemove.indexOf(el) < 0;
             });
         }
 
@@ -295,8 +297,8 @@ export default class Selection extends React.Component {
             columns.push("*");
         }
 
-        for (let i = 0; i <= columns.length - 1; i++) {             
-             items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);   
+        for (let i = 0; i <= columns.length - 1; i++) {
+            items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);
         }
         return items;
     }
@@ -320,9 +322,9 @@ export default class Selection extends React.Component {
                 }
             }
         }
-        for (let i = 0; i <= joinFilters.length - 1; i++) {             
+        for (let i = 0; i <= joinFilters.length - 1; i++) {
             // Dynamically set the options for tables 
-            items.push(<option key={i} value={joinFilters[i]}>{joinFilters[i]}</option>);   
+            items.push(<option key={i} value={joinFilters[i]}>{joinFilters[i]}</option>);
         }
         return items;
     }
@@ -353,7 +355,7 @@ export default class Selection extends React.Component {
         this.setState({whereFormStates: newWhereForm});
     }
 
-    clearColumns(){
+    clearColumns() {
         console.log(this.state.displayColumns);
         this.state.displayColumns = [];
         console.log("clear columns");
@@ -364,14 +366,14 @@ export default class Selection extends React.Component {
 
     toggle() {
         this.setState({
-          modal: !this.state.modal
+            modal: !this.state.modal
         });
-      }
+    }
 
     // #######################################################################################
 
-    
-      render() {
+
+    render() {
         const button = this.state.whereFormStates.length > 0 ? (
             <div>
                 <Button type="button" outline color="secondary" value="AND" onClick={this.createWhereOption.bind(this)}>Add
@@ -385,81 +387,83 @@ export default class Selection extends React.Component {
         );
         const join_list = this.createJoinOptions();
         return (
-          <form onSubmit={this.handleSubmit}>
-            <label>
-              <header>Table:</header>
-              <select multiple={true} value={this.state.tableNames.selected} onChange={this.handleTableChanges}>
-                {this.createTableOptions()}
-              </select>
-            </label>
-            <br/>
-            {this.state.selectedTable !== '' &&
-            <label>
-              <header>Please select your columns:</header>
-              <select multiple={true} value={this.state.selectedColumns.selected} onChange={this.handleColumnChanges}>
-                {this.createColumnOptions()}
-              </select>
+            <form onSubmit={this.handleSubmit}>
+                <label>
+                    <header>Table:</header>
+                    <select multiple={true} value={this.state.tableNames.selected} onChange={this.handleTableChanges}>
+                        {this.createTableOptions()}
+                    </select>
+                </label>
                 <br/>
-                <br/>
-                <Button type="button" color="secondary" value = "CLEAR DATA" onClick = {this.clearColumns.bind(this)}>Clear Data
-                </Button>
-            </label>
-            }
-            <br/>
-            {join_list.length > 0 &&
-            <label>
-              <header>Please select the join condition:</header>
-              <select multiple={true} value={this.state.joinOptions.selected} onChange={this.handleJoinChanges}>
-                {this.createJoinOptions()}
-              </select>
-            </label>
-            }
-            <br/>
-            {this.state.whereFormStates.length > 0 &&
-            <label>
-            <h5>Add your conditions:</h5>
-            {this.state.whereFormStates.map((formState, i) => (
-                <div className="whereClauses" id={i}>
-                    <div>{formState.conjunction}</div>
-                    <select id={i} value={formState.selectedColumn}
-                            onChange={this.handleWhereColumnChanges.bind(this)}>
+                {this.state.selectedTable !== '' &&
+                <label>
+                    <header>Please select your columns:</header>
+                    <select multiple={true} value={this.state.selectedColumns.selected}
+                            onChange={this.handleColumnChanges}>
                         {this.createColumnOptions()}
                     </select>
-                    <select id={i} value={formState.selectedCondition}
-                            onChange={this.handleWhereColumnStates.bind(this)}>
-                        <option key="lt" value="<">Less</option>
-                        <option key="gt" value=">">Greater</option>
-                        <option key="eq" value="=">Equal</option>
-                        <option key="leq" value="<=">LessEq</option>
-                        <option key="geq" value=">=">GreaterEq</option>
+                    <br/>
+                    <br/>
+                    <Button type="button" color="secondary" value="CLEAR DATA" onClick={this.clearColumns.bind(this)}>Clear
+                        Data
+                    </Button>
+                </label>
+                }
+                <br/>
+                {join_list.length > 0 &&
+                <label>
+                    <header>Please select the join condition:</header>
+                    <select multiple={true} value={this.state.joinOptions.selected} onChange={this.handleJoinChanges}>
+                        {this.createJoinOptions()}
                     </select>
-                    <input id={i} type="text" value={formState.inputtedValue}
-                           onChange={this.handleWhereInputChanges.bind(this)}/>
-                    <Button color="danger" size="sm" type="button" value="delete" id={i}
-                           onClick={this.deleteWhereOption.bind(this)}>Delete
-                   </Button>
+                </label>
+                }
+                <br/>
+                {this.state.whereFormStates.length > 0 &&
+                <label>
+                    <h5>Add your conditions:</h5>
+                    {this.state.whereFormStates.map((formState, i) => (
+                        <div className="whereClauses" id={i}>
+                            <div>{formState.conjunction}</div>
+                            <select id={i} value={formState.selectedColumn}
+                                    onChange={this.handleWhereColumnChanges.bind(this)}>
+                                {this.createColumnOptions()}
+                            </select>
+                            <select id={i} value={formState.selectedCondition}
+                                    onChange={this.handleWhereColumnStates.bind(this)}>
+                                <option key="lt" value="<">Less</option>
+                                <option key="gt" value=">">Greater</option>
+                                <option key="eq" value="=">Equal</option>
+                                <option key="leq" value="<=">LessEq</option>
+                                <option key="geq" value=">=">GreaterEq</option>
+                            </select>
+                            <input id={i} type="text" value={formState.inputtedValue}
+                                   onChange={this.handleWhereInputChanges.bind(this)}/>
+                            <Button color="danger" size="sm" type="button" value="delete" id={i}
+                                    onClick={this.deleteWhereOption.bind(this)}>Delete
+                            </Button>
 
-                </div>))}
-            </label>
-            }
-            <br/>
-            <br/>
-            {button}
-            <Button type="submit" color="success">Generate Query</Button>
-            <br/>
-            <div>
-                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                    <ModalHeader toggle={this.toggle}>Your Query: </ModalHeader>
-                    <ModalBody>
-                        {this.state.query}
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={this.toggle}>Ok!</Button>
-                    </ModalFooter>
-                </Modal>
-            </div>
-            <br/>
-          </form>
+                        </div>))}
+                </label>
+                }
+                <br/>
+                <br/>
+                {button}
+                <Button type="submit" color="success">Generate Query</Button>
+                <br/>
+                <div>
+                    <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                        <ModalHeader toggle={this.toggle}>Your Query: </ModalHeader>
+                        <ModalBody>
+                            {this.state.query}
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="primary" onClick={this.toggle}>Ok!</Button>
+                        </ModalFooter>
+                    </Modal>
+                </div>
+                <br/>
+            </form>
         );
-      }
     }
+}

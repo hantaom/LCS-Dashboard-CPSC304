@@ -319,11 +319,11 @@ export default class Update extends React.Component {
                                 <option key="add" value="add">Add</option>
                                 <option key="drop" value="drop">Drop</option>
                             </select>
-                            <select id={i} value={formState.selectedColumn}
+                            <select id={i + 100} value={formState.selectedColumn}
                                     onChange={this.handleConstraintColumnChanges.bind(this)}>
                                 {this.createColumnOptions()}
                             </select>
-                            <select id={i} value={formState.selectedCondition}
+                            <select id={i + 200} value={formState.selectedCondition}
                                     onChange={this.handleConstraintColumnStates.bind(this)}>
                                 <option key="lt" value="<">Less</option>
                                 <option key="gt" value=">">Greater</option>
@@ -331,12 +331,11 @@ export default class Update extends React.Component {
                                 <option key="leq" value="<=">LessEq</option>
                                 <option key="geq" value=">=">GreaterEq</option>
                             </select>
-                            <input id={i} type="text" value={formState.inputtedValue}
+                            <input id={i + 300} type="text" value={formState.inputtedValue}
                                    onChange={this.handleConstraintInputChanges.bind(this)}/>
-                            <Button color="danger" type="button" value="delete" id={i}
+                            <Button color="danger" type="button" value="delete" id={i + 400}
                                     onClick={this.deleteConstraintOption.bind(this)}>Delete
                             </Button>
-
                         </div>))}
                 </label>
                 }
