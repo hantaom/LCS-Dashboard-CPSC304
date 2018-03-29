@@ -41,7 +41,7 @@ export default class Division extends React.Component {
 	handleSubmit(event) {
 		let queryString = this.buildQuery();
 		if (queryString === undefined) {
-			return;
+			queryString = "select * from players";
 		}
 		let that = this;
 		request.post('/api/query')
@@ -231,6 +231,9 @@ export default class Division extends React.Component {
 		const newColumns = dividendColumns;
 		for (let i = 0; i < newTables.current.length; i++) {
 			let table = newTables.current[i];
+			if (table == null) {
+				continue;
+			}
 			const array = tables[table].attr;
 			for (let j = 0; j < array.length; j++) {
 				let attribute = array[j];
@@ -247,6 +250,9 @@ export default class Division extends React.Component {
 		const newColumns = divisorColumns;
 		for (let i = 0; i < newTables.current.length; i++) {
 			let table = newTables.current[i];
+			if (table == null) {
+				continue;
+			}
 			const array = tables[table].attr;
 			for (let j = 0; j < array.length; j++) {
 				let attribute = array[j];
