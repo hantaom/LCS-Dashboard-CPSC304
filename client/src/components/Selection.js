@@ -225,10 +225,6 @@ export default class Selection extends React.Component {
         this.state.displaySelectedColumns = [];
         console.log("clear columns");
         console.log(this.state.displaySelectedColumns);
-<<<<<<< HEAD
-        this.setState(this.state.selectedColumns = []);
-=======
->>>>>>> 32e1e7b93ff8bf1deb4720c20992be6aa644893d
         console.log(this.state.selectedColumns);
         this.setState({selectedColumns: []})
     }

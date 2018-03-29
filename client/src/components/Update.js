@@ -283,6 +283,9 @@ export default class Update extends React.Component {
     render() {
         const button = this.state.whereFormStates.length > 0 ? (
             <div>
+                <Button type="button" outline color="secondary" value="OR"
+                        onClick={this.createConstraintOption.bind(this)}>Add
+                    Check</Button>
                 <Button type="button" outline color="secondary" value="AND" onClick={this.createWhereOption.bind(this)}>Add
                     AND condition</Button>
                 <Button type="button" outline color="secondary" value="OR" onClick={this.createWhereOption.bind(this)}>Add
@@ -314,16 +317,16 @@ export default class Update extends React.Component {
                     <h5>Add/Remove your table constraints:</h5>
                     {this.state.constraintForms.map((formState, i) => (
                         <div className="constraints" id={i}>
-                            <select id={i} value={formState.conjunction}
+                            <select key={i + 100} id={i} value={formState.conjunction}
                                     onChange={this.handleAddOrDropConstraint.bind(this)}>
                                 <option key="add" value="add">Add</option>
                                 <option key="drop" value="drop">Drop</option>
                             </select>
-                            <select id={i + 100} value={formState.selectedColumn}
+                            <select key={i + 200} id={i} value={formState.selectedColumn}
                                     onChange={this.handleConstraintColumnChanges.bind(this)}>
                                 {this.createColumnOptions()}
                             </select>
-                            <select id={i + 200} value={formState.selectedCondition}
+                            <select key={i + 400} id={i} value={formState.selectedCondition}
                                     onChange={this.handleConstraintColumnStates.bind(this)}>
                                 <option key="lt" value="<">Less</option>
                                 <option key="gt" value=">">Greater</option>
@@ -331,9 +334,9 @@ export default class Update extends React.Component {
                                 <option key="leq" value="<=">LessEq</option>
                                 <option key="geq" value=">=">GreaterEq</option>
                             </select>
-                            <input id={i + 300} type="text" value={formState.inputtedValue}
+                            <input id={i} type="text" value={formState.inputtedValue}
                                    onChange={this.handleConstraintInputChanges.bind(this)}/>
-                            <Button color="danger" type="button" value="delete" id={i + 400}
+                            <Button color="danger" type="button" value="delete" id={i}
                                     onClick={this.deleteConstraintOption.bind(this)}>Delete
                             </Button>
                         </div>))}
