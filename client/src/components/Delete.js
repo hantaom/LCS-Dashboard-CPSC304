@@ -1,7 +1,7 @@
 import React from "react";
 import {CONSTANTS} from "../TableConstants";
 import request from 'superagent';
-import { Button } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 export default class Delete extends React.Component {
 
@@ -9,6 +9,8 @@ export default class Delete extends React.Component {
         super(props);
         this.state = {
                       selectedTable: '',
+                      modal: false,
+                      query: '',
                       whereFormStates: []
                         /*
                         whereFormStates[i] = {
@@ -24,6 +26,7 @@ export default class Delete extends React.Component {
         this.handleTableChanges = this.handleTableChanges.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.createWhereOption = this.createWhereOption.bind(this);
+        this.toggle = this.toggle.bind(this);
       }
       
       // Functions for handling the state changes
@@ -157,6 +160,7 @@ export default class Delete extends React.Component {
         // .end(function(err, res){
         //   console.log(res.text);
         //   alert(res.text);
+        //   that.toggle();
         // }); 
         alert(queryString);
         event.preventDefault();
@@ -176,6 +180,11 @@ export default class Delete extends React.Component {
 
     // #######################################################################################
 
+    toggle() {
+        this.setState({
+          modal: !this.state.modal
+        });
+      }
     
       render() {
 
@@ -234,6 +243,17 @@ export default class Delete extends React.Component {
             </div>
             }
             <br/>
+            <div>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <ModalHeader toggle={this.toggle}>Your Query: </ModalHeader>
+                    <ModalBody>
+                        {this.state.query}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={this.toggle}>Ok!</Button>
+                    </ModalFooter>
+                </Modal>
+            </div>
           </form>
         );
       }

@@ -1,7 +1,7 @@
 import React from "react";
 import {CONSTANTS} from "../TableConstants";
 import request from "superagent";
-import { Button } from "reactstrap";
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 export default class Division extends React.Component {
 
@@ -9,6 +9,8 @@ export default class Division extends React.Component {
 		super(props);
 		this.state = {
 			tables: {},
+			modal: false,
+			query: '',
 			divisorTables: {current: []},
 			dividendTables: {current: []},
 			divisorColumns: {current: []},
@@ -36,6 +38,7 @@ export default class Division extends React.Component {
 		this.createTableOptions = this.createTableOptions.bind(this);
 		this.createDivisorColumnOptions = this.createDivisorColumnOptions.bind(this);
 		this.createDividendColumnOptions = this.createDividendColumnOptions.bind(this);
+		this.toggle = this.toggle.bind(this);
 	}
 
 	handleSubmit(event) {
@@ -49,9 +52,11 @@ export default class Division extends React.Component {
 			.query({query: queryString})
 			.end(function(err, res) {
 				that.props.setData(JSON.parse(res.text));
+				that.toggle();
 				that.setState({
 					queryResults: res,
-					headerNames: that.state.dividendColumns.current
+					headerNames: that.state.dividendColumns.current,
+					query: queryString
 				});
 			});
 		event.preventDefault();
@@ -269,6 +274,14 @@ export default class Division extends React.Component {
 		items.push(<option key="none" value="none">none of</option>);
 		return items;
 	}
+
+	toggle() {
+        this.setState({
+          modal: !this.state.modal
+        });
+	  }
+	  
+
 	render() {
 		return (
 			<form onSubmit={this.handleSubmit}>
@@ -323,6 +336,17 @@ export default class Division extends React.Component {
 				<br/>
 				<Button type="submit" color="success">Generate Query</Button>
 				<br/>
+				<div>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <ModalHeader toggle={this.toggle}>Your Query: </ModalHeader>
+                    <ModalBody>
+                        {this.state.query}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={this.toggle}>Ok!</Button>
+                    </ModalFooter>
+                </Modal>
+            </div>
 				<br/>
 			</form>
 		);

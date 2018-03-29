@@ -1,8 +1,7 @@
 import React from "react";
 import {CONSTANTS} from "../TableConstants";
-import TableView from "./TableView";
 import request from 'superagent';
-import { Button } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 export default class Selection extends React.Component {
 
@@ -13,6 +12,8 @@ export default class Selection extends React.Component {
                       joinOptions: {selected: []},
                       displayColumns: [],
                       selectedTable: '',
+                      query: '',
+                      modal: false,
                       whereFormStates: []
                         /*
                             whereFormStates[i] = {
@@ -30,6 +31,7 @@ export default class Selection extends React.Component {
         this.handleJoinChanges = this.handleJoinChanges.bind(this);
         this.createColumnOptions = this.createColumnOptions.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.toggle = this.toggle.bind(this);
       }
       
       // Functions for handling the state changes
@@ -198,9 +200,11 @@ export default class Selection extends React.Component {
         .end(function(err, res){
           console.log(res.text);
           that.props.setData(JSON.parse(res.text));
+          that.toggle();
           that.setState({
             queryResults: res,
-            headerNames: that.state.displaySelectedColumns
+            headerNames: that.state.displaySelectedColumns,
+            query: queryString
         });
           // this.setState(;
         }); 
@@ -348,6 +352,12 @@ export default class Selection extends React.Component {
         this.setState({whereFormStates: newWhereForm});
     }
 
+    toggle() {
+        this.setState({
+          modal: !this.state.modal
+        });
+      }
+
     // #######################################################################################
 
     
@@ -423,6 +433,17 @@ export default class Selection extends React.Component {
             {button}
             <Button type="submit" color="success">Generate Query</Button>
             <br/>
+            <div>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <ModalHeader toggle={this.toggle}>Your Query: </ModalHeader>
+                    <ModalBody>
+                        {this.state.query}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={this.toggle}>Ok!</Button>
+                    </ModalFooter>
+                </Modal>
+            </div>
             <br/>
           </form>
         );

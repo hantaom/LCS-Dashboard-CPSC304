@@ -527,8 +527,6 @@ export default class Aggregate extends React.Component {
         return items;
       }
 
-
-
     
       render() {
         const button = this.state.whereFormStates.length > 0 ? (
