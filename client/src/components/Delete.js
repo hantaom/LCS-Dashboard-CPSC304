@@ -115,6 +115,15 @@ export default class Delete extends React.Component {
         return items;
         }
 
+    clearColumns(){
+        console.log(this.state.displaySelectedColumns);
+        this.state.displaySelectedColumns = [];
+        console.log("clear columns");
+        console.log(this.state.displaySelectedColumns);
+        this.state.selectedColumns = [];
+        console.log(this.state.selectedColumns);
+    }
+
       
       // #######################################################################################
     

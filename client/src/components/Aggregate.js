@@ -444,8 +444,8 @@ export default class Aggregate extends React.Component {
         let i = newAggregateForm.length;
 
         newAggregateForm[i] = {
-            selectedColumn: "",
-            aggregateCondition: ""
+            selectedColumn: this.state.selectedColumns.selected[0],
+            aggregateCondition: "avg"
         };
 
         this.setState({aggregateFormStates: newAggregateForm});
@@ -492,6 +492,15 @@ export default class Aggregate extends React.Component {
         let id = event.target.id;
         forms.splice(id, 1);
         this.setState({aggregateFormStates: forms});
+    }
+
+    clearColumns(){
+        console.log(this.state.displaySelectedColumns);
+        this.state.displaySelectedColumns = [];
+        console.log("clear columns");
+        console.log(this.state.displaySelectedColumns);
+        this.state.selectedColumns = [];
+        console.log(this.state.selectedColumns);
     }
 
     toggle() {
