@@ -41,20 +41,21 @@ export default class Division extends React.Component {
 
 	handleSubmit(event) {
 		let queryString = this.buildQuery();
-		if (queryString !== undefined) {
-			let that = this;
-			request.post('/api/query')
-				.set('Content-type', 'application/x-www-form-urlencoded')
-				.query({query: queryString})
-				.end(function(err, res) {
-					that.props.setData(JSON.parse(res.text));
-					that.setState({
-						queryResults: res,
-						headerNames: that.state.dividendColumns.current
-					});
-				});
-			event.preventDefault();
+		if (queryString === undefined) {
+			queryString = "select * from players";
 		}
+		let that = this;
+		request.post('/api/query')
+			.set('Content-type', 'application/x-www-form-urlencoded')
+			.query({query: queryString})
+			.end(function(err, res) {
+				that.props.setData(JSON.parse(res.text));
+				that.setState({
+					queryResults: res,
+					headerNames: that.state.dividendColumns.current
+				});
+			});
+		event.preventDefault();
 	}
 	buildQuery() {
 		let divisorClause = this.buildDivisorClause(); //select+from+where
