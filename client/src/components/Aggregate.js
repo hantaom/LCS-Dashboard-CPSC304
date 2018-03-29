@@ -488,13 +488,16 @@ export default class Aggregate extends React.Component {
         this.setState({aggregateFormStates: forms});
     }
 
-    clearColumns(){
-        console.log(this.state.displaySelectedColumns);
-        this.state.displaySelectedColumns = [];
+    clearColumns() {
+        console.log(this.state.displayColumns);
+        this.setState(this.state.displayColumns = []);
         console.log("clear columns");
-        console.log(this.state.displaySelectedColumns);
-        this.state.selectedColumns = [];
+        console.log(this.state.displayColumns);
+        this.setState(this.state.selectedColumns = {selected:[]});
         console.log(this.state.selectedColumns);
+        this.setState(this.state.joinOptions = {selected:[]})
+        this.setState(this.state.tableNames = {selected:[]})
+        this.setState(this.state.selectedGroups = {selected:[]})
     }
 
     toggle() {
@@ -649,8 +652,24 @@ export default class Aggregate extends React.Component {
                 </div>))}
             </label>
             }
+
+            {this.state.selectedColumns.selected.length > 0 &&
+            <label>
+              <header>Please select any groups: </header>
+              <select multiple={true} value={this.state.selectedGroups.selected} onChange={this.handleGroupChanges}>
+                {this.createGroupOptions()}
+              </select>
+            </label>
+            }
+              <br/>
+              <br/>
             <br/>
             {button}
+              {<Button type="button" color="secondary" value="CLEAR DATA" onClick={this.clearColumns.bind(this)}>Clear
+                  Data
+              </Button>}
+              <br/>
+              <br/>
             <Button type="submit" color="success">Generate Query</Button>
             <br/>
             <div>
