@@ -340,7 +340,7 @@ export default class Update extends React.Component {
                             </select>
                             <input id={i} type="text" value={formState.inputtedValue}
                                    onChange={this.handleConstraintInputChanges.bind(this)}/>
-                            <Button outline color="danger" type="button" value="delete" id={i}
+                            <Button color="danger" type="button" value="delete" id={i}
                                     onClick={this.deleteConstraintOption.bind(this)}>Delete
                             </Button>
 
@@ -390,7 +390,7 @@ export default class Update extends React.Component {
                             </select>
                             <input id={i} type="text" value={formState.inputtedValue}
                                    onChange={this.handleWhereInputChanges.bind(this)}/>
-                            <Button outline color="danger" type="button" value="delete" id={i}
+                            <Button color="danger" type="button" value="delete" id={i}
                                     onClick={this.deleteWhereOption.bind(this)}>Delete
                             </Button>
 
