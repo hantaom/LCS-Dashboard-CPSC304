@@ -43,14 +43,8 @@ export default class Selection extends React.Component {
     handleSubmit(event) {
         let that = this;
         let queryString = that.buildQuery();
-        request
-            .post('/api/query')
-            .set('Content-Type', 'application/x-www-form-urlencoded')
-            .query({query: queryString})
-            .end(function (err, res) {
-                console.log(res.text);
-                that.props.setData(JSON.parse(res.text));
-                that.toggle();
+        that.props.sendRequest(queryString, this)
+            .then(function(res) {
                 that.setState({
                     queryResults: res,
                     headerNames: that.state.displaySelectedColumns,
@@ -188,6 +182,11 @@ export default class Selection extends React.Component {
 
         if (!columns) return;
 
+        // Add the SELECT * option
+        if (!columns.includes("*")) {
+            columns.push("*");
+        }
+
         for (let i = 0; i <= columns.length - 1; i++) {
             items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);
         }
@@ -226,8 +225,12 @@ export default class Selection extends React.Component {
         this.state.displaySelectedColumns = [];
         console.log("clear columns");
         console.log(this.state.displaySelectedColumns);
+<<<<<<< HEAD
         this.setState(this.state.selectedColumns = []);
+=======
+>>>>>>> 32e1e7b93ff8bf1deb4720c20992be6aa644893d
         console.log(this.state.selectedColumns);
+        this.setState({selectedColumns: []})
     }
 
 

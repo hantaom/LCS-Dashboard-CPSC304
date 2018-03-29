@@ -11,10 +11,11 @@ export default class Division extends React.Component {
 			tables: {},
 			modal: false,
 			query: '',
-			divisorTables: {current: []},
-			dividendTables: {current: []},
-			divisorColumns: {current: []},
-			dividendColumns: {current: []},
+			//selected are selected&&shown, others are selected
+			divisorTables: {selected: []}, 
+			dividendTables: {selected: []},
+			divisorColumns: {selected: []},
+			dividendColumns: {selected: []},
 			mode: "null"
 		}
 		let tables = this.state.tables;
@@ -42,75 +43,95 @@ export default class Division extends React.Component {
 	}
 
 	handleSubmit(event) {
-		// let queryString = this.buildQuery();
-		let queryString = undefined;
+		let queryString = this.buildQuery();
 		if (queryString === undefined) {
-			queryString = "select * from players;";
+			queryString = "SELECT * FROM PLAYERS;";
 		}
+		console.log(queryString);
 		let that = this;
-		request.post('/api/query')
-			.set('Content-type', 'application/x-www-form-urlencoded')
-			.query({query: queryString})
-			.end(function(err, res) {
-				that.props.setData(JSON.parse(res.text));
-				that.toggle();
+        that.props.sendRequest(queryString, this)
+            .then(function(res) {
 				that.setState({
 					queryResults: res,
-					headerNames: that.state.dividendColumns.current
+					headerNames: that.state.dividendColumns.current,
+					query: queryString
 				});
 			});
 		event.preventDefault();
 	}
 	buildQuery() {
+		let { dividendTables,divisorTables,dividendColumns,divisorColumns,mode } = this.state;
+		if (dividendTables.length <= 0) {
+			alert("Choose a table to divide from!");
+			return;
+		}
+		if (divisorTables.length <= 0) {
+			alert("Choose a table to divide with!");
+			return;
+		}
+		if (dividendColumns.length < divisorColumns.length) {
+			alert("Primary table cannot have less attributes than secondary table!");
+			return;
+		}
 		let divisorClause = this.buildDivisorClause(); //select+from+where
-		console.log(divisorClause);
-		let { dividendTables,divisorTables,dividendColumns,mode } = this.state;
 		let selectClause = "select distinct ";
 		let fromClause = "from ";
 		let selectAppended = false;
 		let fromAppended = false;
 		for (let table in dividendTables) {
-			if (table === "current") {
-				continue;
+			if (table !== "selected") {
+				if (fromAppended) {
+					fromClause = fromClause + ",";
+				}
+				fromClause = fromClause + table + " ";
+				fromAppended = true;
 			}
-			if (fromAppended) {
-				fromClause = fromClause + ",";
-			}
-			fromClause = fromClause + table + " ";
-			fromAppended = true;
 		}
 		selectAppended = false;
 		for (let attribute in dividendColumns) {
-			if (attribute === "current") {
-				continue;
+			if (attribute !== undefined && attribute !== "selected") {
+				if (selectAppended) {
+					selectClause = selectClause + ",";
+				}
+				selectClause = selectClause + attribute + " ";
+				selectAppended = true;
 			}
-			if (selectAppended) {
-				selectClause = selectClause + ",";
-			}
-			selectClause = selectClause + attribute + " ";
-			selectAppended = true;
 		}
 		let queryString = selectClause + fromClause + "where not exists (";
 		if (mode === "null") {
-			return undefined;
+			return;
 		}
 		if (mode === "all") {
-			fromClause = "from ";
-			let fromAppended = false;
-			for (let table in divisorTables) {
-				if (!dividendTables.include(table)) {
-					if (fromAppended) {
-						fromClause = fromClause + ",";
+			let newSelectClause = "select ";
+			let appended = false;
+			for (let aSec in divisorColumns) {
+				if (aSec == null || aSec === "selected") {
+					continue;
+				}
+				let aSecAttr = aSec.split(".")[1];
+				for (let aPri in dividendColumns) {
+					if (aPri == null || aPri === "selected") {
+						continue;
 					}
-					fromClause = fromClause + table + " ";
-					fromAppended = true;
+					let aPriAttr = aPri.split(".")[1];
+					if (aSecAttr === aPriAttr
+						||
+					   (aSecAttr.includes("team") && aPriAttr.includes("team"))
+					) {
+						if (appended) {
+							newSelectClause = newSelectClause + ",";
+						}
+						newSelectClause = newSelectClause + aPriAttr + " ";
+						appended = true;
+					}
 				}
 			}
-			queryString = queryString + divisorClause.selectClause + fromClause + "except ";
+			if (appended) {
+				queryString = queryString + newSelectClause + fromClause + "except ";
+			}
 		}
-		divisorClause = divisorClause.selectClause + divisorClause.fromClause + divisorClause.whereClause;
-		queryString = queryString + divisorClause + ");"
-		console.log(queryString);
+		let divisorClauseString = divisorClause.selectClause + divisorClause.fromClause + divisorClause.whereClause;
+		queryString = queryString + divisorClauseString + ");"
 		return queryString;
 	}
 	buildDivisorClause() {
@@ -121,7 +142,7 @@ export default class Division extends React.Component {
 		
 		let fromAppended = false;
 		for (let table in divisorTables) {
-			if (table === "current") {
+			if (table == null || table === "selected") {
 				continue;
 			}
 			if (fromAppended) {
@@ -130,35 +151,36 @@ export default class Division extends React.Component {
 			fromClause = fromClause + table + " ";
 			fromAppended = true;
 		}
-		let whereAppended = false;
-		let selectAppended = false;
+		let appended = false;
 		for (let aSec in divisorColumns) {
-			if (aSec === "current") {
+			if (aSec == null || aSec === "selected") {
 				continue;
 			}
-			let found = false;
 			for (let aPri in dividendColumns) {
-				if (aPri === "current") {
+				if (aPri == null || aPri === "selected") {
 					continue;
 				}
 				//if divisor and dividend has common attribute
-				if (aSec.split(".")[1] === aPri.split(".")[1]) {
-					if (whereAppended) {
+				let aSecAttr = aSec.split(".")[1];
+				let aPriAttr = aPri.split(".")[1];
+				if (aSecAttr === aPriAttr
+					||
+				   (aSecAttr.includes("team") && aPriAttr.includes("team"))
+				) {
+					if (appended) {
 						whereClause = whereClause + "and ";
+						selectClause = selectClause + ",";
 					}
 					whereClause = whereClause + aSec+"="+aPri;
-					whereAppended = true;
-					found = true;
-					break;
+					selectClause = selectClause + aSec + " ";
+					appended = true;
 				}
 			}
-			if (!found) {
-				if (selectAppended) {
-					selectClause = selectClause + ",";
-				}
-				selectClause = selectClause + aSec + " ";
-				selectAppended = true;
-			}
+		}
+		if (appended === false) {
+			selectClause = "";
+			fromClause = "";
+			whereClause = "";
 		}
 		return { selectClause, fromClause, whereClause };
 	}
@@ -166,58 +188,89 @@ export default class Division extends React.Component {
 	handleDividendTableChanges(event) {
 		const { value } = event.target;
 		const newTables = this.state.dividendTables;
-		let index = newTables.current.indexOf(value);
+		const newColumns = this.state.dividendColumns;
+		let index = newTables.selected.indexOf(value);
 		if (index > -1) {
 			delete newTables[value];
-			delete newTables.current[index];
+			delete newTables.selected[index];
+			newColumns.selected.filter((e1) => {
+				return e1.split(".")[0] !== value;
+			});
+			for (let key in newColumns) {
+				if (key === "selected" || key == null) {
+					continue;
+				}
+				if (key.split(".")[0] === value) {
+					delete newColumns[key];
+				}
+			}
 		} else {
-			newTables.current.push(value);
+			newTables.selected.push(value);
 			newTables[value] = value;
 		}
-		this.setState({dividendTables: newTables});
+		console.log(newTables);
+		console.log(newColumns);
+		this.setState({dividendTables: newTables, dividendColumns: newColumns});
 	}
 	handleDivisorTableChanges(event) {
 		const { value } = event.target;
 		const newTables = this.state.divisorTables;
-		let index = newTables.current.indexOf(value);
+		const newColumns = this.state.divisorColumns;
+		let index = newTables.selected.indexOf(value);
 		if (index > -1) {
 			delete newTables[value];
-			delete newTables.current[index];
+			delete newTables.selected[index];
+			newColumns.selected.filter((e1) => {
+				return e1.split(".")[0] !== value;
+			});
+			for (let key in newColumns) {
+				if (key === "selected" || key == null) {
+					continue;
+				}
+				if (key.split(".")[0] === value) {
+					delete newColumns[key];
+				}
+			}
 		} else {
-			newTables.current.push(value);
+			newTables.selected.push(value);
 			newTables[value] = value;
 		}
-		this.setState({divisorTables: newTables});
+		console.log(newTables);
+		console.log(newColumns);
+		this.setState({divisorTables: newTables, divisorColumns: newColumns});
 	}
 	handleDividendColumnChanges(event) {
 		const { value } = event.target;
 		//value is "table.attribute"
 		const newColumns = this.state.dividendColumns;
-		let index = newColumns.current.indexOf(value);
+		let index = newColumns.selected.indexOf(value);
 		if (index > -1) {
 			delete newColumns[value];
-			delete newColumns.current[index];
+			delete newColumns.selected[index];
 		} else {
-			newColumns.current.push(value);
+			newColumns.selected.push(value);
 			newColumns[value] = value;
 		}
+		console.log(newColumns);
 		this.setState({dividendColumns: newColumns});
 	}
 	handleDivisorColumnChanges(event) {
 		const { value } = event.target;
 		//value is "table.attribute"
 		const newColumns = this.state.divisorColumns;
-		let index = newColumns.current.indexOf(value);
+		let index = newColumns.selected.indexOf(value);
 		if (index > -1) {
 			delete newColumns[value];
-			delete newColumns.current[index];
+			delete newColumns.selected[index];
 		} else {
-			newColumns.current.push(value);
+			newColumns.selected.push(value);
 			newColumns[value] = value;
 		}
+		console.log(newColumns);
 		this.setState({divisorColumns: newColumns});
 	}
 	handleModeChanges(event) {
+		console.log(event.target.value);
 		this.setState({mode: event.target.value});
 	}
 
@@ -225,7 +278,7 @@ export default class Division extends React.Component {
 		let items = [];
 		let { tables } = this.state;
 		for (let value in tables) {
-			items.push(<option key={value} value={value}>{value}</option>);
+			items.push(<option value={value}>{value}</option>);
 		}
 		return items;
 	}
@@ -234,16 +287,16 @@ export default class Division extends React.Component {
 		let { dividendTables,dividendColumns,tables } = this.state;
 		const newTables = dividendTables;
 		const newColumns = dividendColumns;
-		for (let i = 0; i < newTables.current.length; i++) {
-			let table = newTables.current[i];
-			if (table === null) {
+		for (let i = 0; i < newTables.selected.length; i++) {
+			let table = newTables.selected[i];
+			if (table == null) {
 				continue;
 			}
 			const array = tables[table].attr;
 			for (let j = 0; j < array.length; j++) {
 				let attribute = array[j];
 				attribute = table + "." + attribute;
-				items.push(<option key={i} value={attribute}>{attribute}</option>);
+				items.push(<option key={attribute+".dividend"} value={attribute}>{attribute}</option>);
 			}
 		}
 		return items;
@@ -253,16 +306,16 @@ export default class Division extends React.Component {
 		let { divisorTables,divisorColumns,tables } = this.state;
 		const newTables = divisorTables;
 		const newColumns = divisorColumns;
-		for (let i = 0; i < newTables.current.length; i++) {
-			let table = newTables.current[i];
-			if (table === null) {
+		for (let i = 0; i < newTables.selected.length; i++) {
+			let table = newTables.selected[i];
+			if (table == null) {
 				continue;
 			}
 			const array = tables[table].attr;
 			for (let j = 0; j < array.length; j++) {
 				let attribute = array[j];
 				attribute = table + "." + attribute;
-				items.push(<option key={i} value={attribute}>{attribute}</option>);
+				items.push(<option key={attribute+".divisor"} value={attribute}>{attribute}</option>);
 			}
 		}
 		return items;
@@ -285,10 +338,10 @@ export default class Division extends React.Component {
     }
 
 	toggle() {
-        this.setState({
-          modal: !this.state.modal
-        });
-	  }
+		this.setState({
+			modal: !this.state.modal
+		});
+	}
 	  
 
 	render() {
@@ -298,14 +351,14 @@ export default class Division extends React.Component {
 					<header>From</header>
 					<select
 					  multiple={true}
-					  value={this.state.dividendTables.current}
+					  value={this.state.dividendTables.selected}
 					  onChange={this.handleDividendTableChanges}
 					>
 						{this.createTableOptions()}
 					</select>
 					<select
 					  multiple={true}
-					  value={this.state.dividendColumns.current}
+					  value={this.state.dividendColumns.selected}
 					  onChange={this.handleDividendColumnChanges}
 					>
 						{this.createDividendColumnOptions()}
@@ -329,14 +382,14 @@ export default class Division extends React.Component {
 					<header>the table below</header>
 					<select
 					  multiple={true}
-					  value={this.state.divisorTables.current}
+					  value={this.state.divisorTables.selected}
 					  onChange={this.handleDivisorTableChanges}
 					>
 						{this.createTableOptions()}
 					</select>
 					<select
 					  multiple={true}
-					  value={this.state.divisorColumns.current}
+					  value={this.state.divisorColumns.selected}
 					  onChange={this.handleDivisorColumnChanges}
 					>
 						{this.createDivisorColumnOptions()}
@@ -346,16 +399,23 @@ export default class Division extends React.Component {
 				<Button type="submit" color="success">Generate Query</Button>
 				<br/>
 				<div>
-                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                    <ModalHeader toggle={this.toggle}>Your Query: </ModalHeader>
-                    <ModalBody>
-                        {this.state.query}
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={this.toggle}>Ok!</Button>
-                    </ModalFooter>
-                </Modal>
-            </div>
+					<Modal
+					  isOpen={this.state.modal}
+					  toggle={this.toggle}
+					  className={this.props.className}>
+                    				<ModalHeader toggle={this.toggle}>Your Query:</ModalHeader>
+						<ModalBody>
+							{this.state.query}
+						</ModalBody>
+						<ModalFooter>
+							<Button
+							  color="primary"
+							  onClick={this.toggle}>
+								Ok!
+							</Button>
+						</ModalFooter>
+					</Modal>
+				</div>
 				<br/>
 			</form>
 		);

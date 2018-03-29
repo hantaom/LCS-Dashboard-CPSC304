@@ -159,15 +159,15 @@ export default class NestedAggregate extends React.Component {
                         if (aggregate.selectedColumn === table_column) {
                             let condition = aggregate.aggregateCondition;
                             if (condition === "avg") {
-                                table_column = "avg(" + table_column + ")" + ' as innerVal ';
+                                table_column = "AVG(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "min") {
-                                table_column = "min(" + table_column + ")" + ' as innerVal ';
+                                table_column = "MIN(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "max") {
-                                table_column = "max(" + table_column + ")" + ' as innerVal ';
+                                table_column = "MAX(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "sum") {
-                                table_column = "sum(" + table_column + ")" + ' as innerVal ';
+                                table_column = "SUM(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "count") {
-                                table_column = "count(" + table_column + ")" + ' as innerVal ';
+                                table_column = "COUNT(" + table_column + ")" + ' as innerVal ';
                             }
                         }
                     }
@@ -179,15 +179,15 @@ export default class NestedAggregate extends React.Component {
                         if (aggregate.selectedColumn === table_column) {
                             let condition = aggregate.aggregateCondition;
                             if (condition === "avg") {
-                                table_column = "avg(" + table_column + ")" + ' as innerVal ';
+                                table_column = "AVG(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "min") {
-                                table_column = "min(" + table_column + ")" + ' as innerVal ';
+                                table_column = "MIN(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "max") {
-                                table_column = "max(" + table_column + ")" + ' as innerVal ';
+                                table_column = "MAX(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "sum") {
-                                table_column = "sum(" + table_column + ")" + ' as innerVal ';
+                                table_column = "SUM(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "count") {
-                                table_column = "count(" + table_column + ")" + ' as innerVal ';
+                                table_column = "COUNT(" + table_column + ")" + ' as innerVal ';
                             }
                         }
                     }
@@ -214,15 +214,15 @@ export default class NestedAggregate extends React.Component {
                         let aggregate = nestedAggregates[j];
                         let condition = aggregate.aggregateCondition;
                         if (condition === "avg") {
-                            table_column = "avg(" + table_column + ")";
+                            table_column = "AVG(" + table_column + ")";
                         } else if (condition === "min") {
-                            table_column = "min(" + table_column + ")";
+                            table_column = "MIN(" + table_column + ")";
                         } else if (condition === "max") {
-                            table_column = "max(" + table_column + ")";
+                            table_column = "MAX(" + table_column + ")";
                         } else if (condition === "sum") {
-                            table_column = "sum(" + table_column + ")";
+                            table_column = "SUM(" + table_column + ")";
                         } else if (condition === "count") {
-                            table_column = "count(" + table_column + ")";
+                            table_column = "COUNT(" + table_column + ")";
                         }
                     }
                     queryString = queryString + table_column + ' ';
@@ -232,15 +232,15 @@ export default class NestedAggregate extends React.Component {
                         let aggregate = nestedAggregates[j];
                         let condition = aggregate.aggregateCondition;
                         if (condition === "avg") {
-                            table_column = "avg(" + table_column + ")";
+                            table_column = "AVG(" + table_column + ")";
                         } else if (condition === "min") {
-                            table_column = "min(" + table_column + ")";
+                            table_column = "MIN(" + table_column + ")";
                         } else if (condition === "max") {
-                            table_column = "max(" + table_column + ")";
+                            table_column = "MAX(" + table_column + ")";
                         } else if (condition === "sum") {
-                            table_column = "sum(" + table_column + ")";
+                            table_column = "SUM(" + table_column + ")";
                         } else if (condition === "count") {
-                            table_column = "count(" + table_column + ")";
+                            table_column = "COUNT(" + table_column + ")";
                         }
                     }
                     queryString = queryString + table_column + ', ';
@@ -259,31 +259,31 @@ export default class NestedAggregate extends React.Component {
         let query_joins = this.state.joinOptions.selected;
         let query_groups = this.state.selectedGroups.selected;
         let nestedAggregates = this.state.nestedAggregateFormStates;
-        let queryString = 'select ';
+        let queryString = 'SELECT ';
         let nestedAggregateColumns = ["cond.innerVal"];
 
         // Generate the nested aggregate part first
         if (nestedAggregates.length > 0) {
             queryString = this.generateNestedAggregate(queryString, nestedAggregateColumns, nestedAggregates);
-            queryString = queryString + 'from (select ';
+            queryString = queryString + 'FROM (SELECT ';
             queryString = this.generateSelectQueryString(queryString, query_columns,aggregates);
         } else if (query_columns.length > 0) {
             queryString = this.generateSelectQueryString(queryString, query_columns,aggregates);
         }
         // Generate the "FROM" part of the query string
         if (query_tables.length > 0) {
-            queryString = queryString + "from ";
+            queryString = queryString + "FROM ";
             for (let i = 0; i <= query_tables.length - 1; i++) {
                 if (i === 0) {
                     queryString = queryString + query_tables[i] + ' ';
                 } else {
-                    queryString = queryString + "inner join " + query_tables[i] + ' ';
+                    queryString = queryString + "INNER JOIN " + query_tables[i] + ' ';
                 }
             }
         }
         // Generate the INNER JOIN part of the query string
         if (query_joins.length > 0) {
-            queryString = queryString + "on ";
+            queryString = queryString + "ON ";
             for (let i = 0; i <= query_joins.length - 1; i++) {
                 if (i === 0) {
                     queryString = queryString + query_joins[i];
@@ -292,7 +292,7 @@ export default class NestedAggregate extends React.Component {
         }
         // Generate the WHERE part of the query string
         if (query_filters.length > 0) {
-            queryString = queryString + " where ";
+            queryString = queryString + " WHERE ";
             for (let i = 0; i <= query_filters.length - 1; i++) {
                 if (i === 0) {
                     let conj = query_filters[i].conjunction;
@@ -313,7 +313,7 @@ export default class NestedAggregate extends React.Component {
         }
 
         if (query_groups.length > 0) {
-            queryString = queryString + ' group by ';
+            queryString = queryString + 'GROUP BY ';
             for (let i = 0; i <= query_groups.length - 1; i++) {
                 if (i === query_groups.length - 1) {
                     let group_column = query_groups[i];
@@ -326,27 +326,21 @@ export default class NestedAggregate extends React.Component {
         }
         // Append ending of query
         if (nestedAggregates.length > 0) {
-            queryString = queryString + ") as cond;";
+            queryString = queryString + ") AS COND;";
         } else {
             queryString = queryString + ";";
         }
         console.log(queryString);
         // Make the post request
-        let that = this;
-        request
-        .post('/api/query')
-        .set('Content-Type', 'application/x-www-form-urlencoded')
-        .query({ query: queryString})
-        .end(function(err, res){
-          console.log(res.text);
-          that.props.setData(JSON.parse(res.text));
-          that.toggle();
-          that.setState({
-            queryResults: res,
-            headerNames: that.state.displaySelectedColumns,
-            query: queryString
-        });
-        }); 
+          let that = this;
+          that.props.sendRequest(queryString, this)
+              .then(function (res) {
+                  that.setState({
+                      queryResults: res,
+                      headerNames: that.state.displaySelectedColumns,
+                      query: queryString
+                  });
+              });
         event.preventDefault();
       }
 
@@ -433,6 +427,12 @@ export default class NestedAggregate extends React.Component {
                 return toRemove.indexOf( el ) < 0;
             });
         }
+
+        // Add the SELECT * option
+        if (!columns.includes("*")) {
+            columns.push("*");
+        }
+
         for (let i = 0; i <= columns.length - 1; i++) {             
              items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);   
         }

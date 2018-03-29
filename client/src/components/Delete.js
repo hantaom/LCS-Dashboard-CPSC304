@@ -94,7 +94,7 @@ export default class Delete extends React.Component {
             newWhereForm[i] = {
                 conjunction: conjunction,
                 selectedColumn: "",
-                selectedCondition: "",
+                selectedCondition: "<",
                 inputtedValue: ""
             };
         
@@ -131,7 +131,7 @@ export default class Delete extends React.Component {
         let query_table = this.state.selectedTable;
         let query_filters = this.state.whereFormStates;
         console.log(JSON.stringify(query_filters));
-        let queryString = 'delete from ';
+        let queryString = 'DELETE FROM ';
         // Generate the "FROM" part of the query string
         if (query_table !== '') {
             queryString = queryString + query_table;
@@ -142,7 +142,7 @@ export default class Delete extends React.Component {
             for (let i = 0; i <= query_filters.length - 1; i++) {
                 if (i === 0) {
                     let conj = query_filters[i].conjunction;
-                    let column = query_filters[i].selectedColumn;
+                    let column = <query_filters i="" className="selectedColu"></query_filters>;
                     let op = query_filters[i].selectedCondition;
                     let value = "\'" + query_filters[i].inputtedValue + "\'";
                     let filter = column + " " + op + " " + value;
@@ -161,18 +161,15 @@ export default class Delete extends React.Component {
         queryString = queryString + ';';
         console.log(queryString);
         // Make the post request
-        // let that = this;
-        // request
-        // .post('/api/query')
-        // .set('Content-Type', 'application/x-www-form-urlencoded')
-        // .query({ query: queryString})
-        // .end(function(err, res){
-        //   console.log(res.text);
-        //   alert(res.text);
-        //   that.toggle();
-        // }); 
-        alert(queryString);
-        event.preventDefault();
+          let that = this;
+          that.props.sendRequest(queryString, this)
+              .then(function (res) {
+                  that.setState({
+                      headerNames: that.state.displaySelectedColumns,
+                      query: queryString
+                  });
+              });
+          event.preventDefault();
       }
 
       // Code that fills what is inside the selection boxes

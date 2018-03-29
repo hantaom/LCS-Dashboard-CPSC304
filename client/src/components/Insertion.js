@@ -36,14 +36,8 @@ export default class Selection extends React.Component {
 	handleSubmit(event) {
 		let that = this;
 		let queryString = this.buildQuery();
-		request
-			.post('/api/query')
-			.set('Content-Type', 'application/x-www-form-urlencoded')
-			.query({query: queryString})
-			.end(function (err, res) {
-				console.log(res.text);
-				that.props.setData(JSON.parse(res.text));
-				that.toggle();
+        that.props.sendRequest(queryString, this)
+            .then(function(res) {
 				that.setState({
 					queryResults: res,
 					headerNames: that.state.columns.selected,
@@ -67,8 +61,8 @@ export default class Selection extends React.Component {
 	}
 	buildQuery() {
 		let { tables,columns } = this.state;
-		let insertClause = "insert into " + tables.selected + " (";
-		let valueClause = "values (";
+		let insertClause = "INSERT INTO " + tables.selected + " (";
+		let valueClause = "VALUES (";
 		let appended = false;
 		for (let key in columns) {
 			if (key === "selected") {
