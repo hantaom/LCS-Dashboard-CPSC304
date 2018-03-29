@@ -207,7 +207,6 @@ export default class Selection extends React.Component {
             headerNames: that.state.displaySelectedColumns,
             query: queryString
         });
-          // this.setState(;
         }); 
         event.preventDefault();
       }

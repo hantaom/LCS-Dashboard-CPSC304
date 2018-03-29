@@ -1,6 +1,7 @@
 import React from 'react';
-import { Alert, Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Alert, Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
 import './Login.css';
+import request from 'superagent';
 
 class Login extends React.Component {
   constructor(props) {
@@ -44,10 +45,23 @@ login() {
 createUser() {
     let username = this.state.username;
     let password = this.state.password;
+    let queryString = 'CREATE USER ' + username + ' WITH PASSWORD ' + "\'" + password + "\'" + ';';
+    console.log(queryString);
+    let that = this;
 
-    console.log("Username: " + username);
-    console.log("Password:" + password);
-    this.setState({accountCreated: true});
+    request
+    .post('/api/query')
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .query({ query: queryString})
+    .end(function(err, res){
+      console.log(res.text);
+      that.setState({
+        queryResults: res,
+        headerNames: that.state.displaySelectedColumns,
+        query: queryString,
+        accountCreated: true
+    });
+    }); 
 }
 
   render() {
