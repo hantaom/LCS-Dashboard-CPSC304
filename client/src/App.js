@@ -9,6 +9,7 @@ import Division from "./components/Division";
 import Aggregate from "./components/Aggregate";
 import Update from "./components/Update";
 import NestedAggregate from "./components/NestedAggregate";
+import Insertion from "./components/Insertion";
 import {TabContent, TabPane, Nav, NavItem, NavLink, Button, Row, Col} from 'reactstrap';
 
 class App extends Component {
@@ -182,6 +183,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Insertion Queries</h4>
+				    <Insertion setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>
