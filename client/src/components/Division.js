@@ -49,12 +49,8 @@ export default class Division extends React.Component {
 		}
 		console.log(queryString);
 		let that = this;
-		request.post('/api/query')
-			.set('Content-type', 'application/x-www-form-urlencoded')
-			.query({query: queryString})
-			.end(function(err, res) {
-				that.props.setData(JSON.parse(res.text));
-				that.toggle();
+        that.props.sendRequest(queryString, this)
+            .then(function(res) {
 				that.setState({
 					queryResults: res,
 					headerNames: that.state.dividendColumns.current,

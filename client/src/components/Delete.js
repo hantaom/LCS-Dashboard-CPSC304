@@ -142,7 +142,7 @@ export default class Delete extends React.Component {
             for (let i = 0; i <= query_filters.length - 1; i++) {
                 if (i === 0) {
                     let conj = query_filters[i].conjunction;
-                    let column = query_filters[i].selectedColumn;
+                    let column = <query_filters i="" className="selectedColu"></query_filters>mn;
                     let op = query_filters[i].selectedCondition;
                     let value = "\'" + query_filters[i].inputtedValue + "\'";
                     let filter = column + " " + op + " " + value;
@@ -161,20 +161,15 @@ export default class Delete extends React.Component {
         queryString = queryString + ';';
         console.log(queryString);
         // Make the post request
-        let that = this;
-        request
-        .post('/api/query')
-        .set('Content-Type', 'application/x-www-form-urlencoded')
-        .query({ query: queryString})
-        .end(function(err, res){
-          console.log(res.text);
-          that.toggle();
-          that.setState({
-            headerNames: that.state.displaySelectedColumns,
-            query: queryString
-        });
-        }); 
-        event.preventDefault();
+          let that = this;
+          that.props.sendRequest(queryString, this)
+              .then(function (res) {
+                  that.setState({
+                      headerNames: that.state.displaySelectedColumns,
+                      query: queryString
+                  });
+              });
+          event.preventDefault();
       }
 
       // Code that fills what is inside the selection boxes
