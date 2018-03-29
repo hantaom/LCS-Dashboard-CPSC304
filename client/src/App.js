@@ -3,11 +3,15 @@ import './App.css';
 import TableView from "./components/TableView";
 import request from 'superagent';
 import Selection from "./components/Selection";
-import Join from "./components/Join"
-import Delete from "./components/Delete"
-import {TabContent, TabPane, Nav, NavItem, NavLink, Button, Row, Col} from 'reactstrap';
+import Join from "./components/Join";
+import Delete from "./components/Delete";
+import Division from "./components/Division";
 import Aggregate from "./components/Aggregate";
 import Update from "./components/Update";
+import NestedAggregate from "./components/NestedAggregate";
+import Login from "./components/Login";
+import {TabContent, TabPane, Nav, NavItem, NavLink, Row, Col} from 'reactstrap';
+import Insertion from "./components/Insertion";
 
 class App extends Component {
     // Initialize state
@@ -75,6 +79,7 @@ class App extends Component {
         const {queryResults} = this.state;
         return (
             <div className="App">
+                <Login/>
                 <h1 className="title"> LCS Dashboard </h1>
                 <div className="contentBody">
                     <Nav tabs>
@@ -172,6 +177,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Division Queries</h4>
+                                    <Division setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>
@@ -179,6 +185,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Insertion Queries</h4>
+				    <Insertion setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>
@@ -194,7 +201,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Nested Aggregation Queries</h4>
-                                    <Aggregate/>
+                                    <NestedAggregate setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>

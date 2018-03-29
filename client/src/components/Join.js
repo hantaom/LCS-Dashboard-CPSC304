@@ -1,8 +1,8 @@
 import React from "react";
 import {CONSTANTS} from "../TableConstants";
-import TableView from "./TableView";
+import './Login.css';
 import request from 'superagent';
-import { Button } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 export default class Selection extends React.Component {
 
@@ -13,6 +13,8 @@ export default class Selection extends React.Component {
                       joinOptions: {selected: []},
                       displayColumns: [],
                       selectedTable: '',
+                      query: '',
+                      modal: false,
                       whereFormStates: []
                         /*
                             whereFormStates[i] = {
@@ -30,6 +32,7 @@ export default class Selection extends React.Component {
         this.handleJoinChanges = this.handleJoinChanges.bind(this);
         this.createColumnOptions = this.createColumnOptions.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.toggle = this.toggle.bind(this);
       }
       
       // Functions for handling the state changes
@@ -198,9 +201,11 @@ export default class Selection extends React.Component {
         .end(function(err, res){
           console.log(res.text);
           that.props.setData(JSON.parse(res.text));
+          that.toggle();
           that.setState({
             queryResults: res,
-            headerNames: that.state.displaySelectedColumns
+            headerNames: that.state.displaySelectedColumns,
+            query: queryString
         });
           // this.setState(;
         }); 
@@ -214,7 +219,7 @@ export default class Selection extends React.Component {
         let tables = ["team", "players", "champion", "game", "game_stats", "player_stats", "team_stats", "plays_in"];
         for (let i = 0; i <= tables.length - 1; i++) {             
             // Dynamically set the options for tables 
-            items.push(<option value={tables[i]}>{tables[i]}</option>);   
+            items.push(<option key={i} value={tables[i]}>{tables[i]}</option>);   
         }
         return items;
     }
@@ -291,7 +296,7 @@ export default class Selection extends React.Component {
             });
         }
         for (let i = 0; i <= columns.length - 1; i++) {             
-             items.push(<option value={columns[i]}>{columns[i]}</option>);   
+             items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);   
         }
         return items;
     }
@@ -317,7 +322,7 @@ export default class Selection extends React.Component {
         }
         for (let i = 0; i <= joinFilters.length - 1; i++) {             
             // Dynamically set the options for tables 
-            items.push(<option value={joinFilters[i]}>{joinFilters[i]}</option>);   
+            items.push(<option key={i} value={joinFilters[i]}>{joinFilters[i]}</option>);   
         }
         return items;
     }
@@ -347,6 +352,12 @@ export default class Selection extends React.Component {
 
         this.setState({whereFormStates: newWhereForm});
     }
+
+    toggle() {
+        this.setState({
+          modal: !this.state.modal
+        });
+      }
 
     // #######################################################################################
 
@@ -423,6 +434,17 @@ export default class Selection extends React.Component {
             {button}
             <Button type="submit" color="success">Generate Query</Button>
             <br/>
+            <div>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <ModalHeader toggle={this.toggle}>Your Query: </ModalHeader>
+                    <ModalBody>
+                        {this.state.query}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={this.toggle}>Ok!</Button>
+                    </ModalFooter>
+                </Modal>
+            </div>
             <br/>
           </form>
         );

@@ -1,7 +1,7 @@
 import React from "react";
 import request from "superagent";
 import {CONSTANTS} from "../TableConstants";
-import {Button} from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 export default class Selection extends React.Component {
 
@@ -10,6 +10,10 @@ export default class Selection extends React.Component {
         this.state = {
             selectedColumns: {},
             selectedTable: '',
+            modal: false,
+            query: '',
+            displayColumns: [],
+
             displaySelectedColumns: [],
 
             whereFormStates: []
@@ -28,6 +32,7 @@ export default class Selection extends React.Component {
         this.handleColumnChanges = this.handleColumnChanges.bind(this);
         this.createColumnOptions = this.createColumnOptions.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.toggle = this.toggle.bind(this);
     };
     componentDidMount(){
 
@@ -37,16 +42,19 @@ export default class Selection extends React.Component {
 
     handleSubmit(event) {
         let that = this;
+        let queryString = that.buildQuery();
         request
             .post('/api/query')
             .set('Content-Type', 'application/x-www-form-urlencoded')
-            .query({query: that.buildQuery()})
+            .query({query: queryString})
             .end(function (err, res) {
                 console.log(res.text);
                 that.props.setData(JSON.parse(res.text));
+                that.toggle();
                 that.setState({
                     queryResults: res,
-                    headerNames: that.state.displaySelectedColumns
+                    headerNames: that.state.displaySelectedColumns,
+                    query: queryString
                 });
             });
         event.preventDefault();
@@ -181,7 +189,7 @@ export default class Selection extends React.Component {
         if (!columns) return;
 
         for (let i = 0; i <= columns.length - 1; i++) {
-            items.push(<option value={columns[i]}>{columns[i]}</option>);
+            items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);
         }
 
         console.log(items);
@@ -211,6 +219,7 @@ export default class Selection extends React.Component {
         this.setState({whereFormStates: newWhereForm});
     }
 
+
     clearColumns(){
         console.log(this.state.displaySelectedColumns);
         this.state.displaySelectedColumns = [];
@@ -219,6 +228,13 @@ export default class Selection extends React.Component {
         this.state.selectedColumns = [];
         console.log(this.state.selectedColumns);
     }
+
+
+    toggle() {
+        this.setState({
+          modal: !this.state.modal
+        });
+      }
 
 
     render() {
@@ -294,6 +310,17 @@ export default class Selection extends React.Component {
                     <Button type="submit" color="success">Generate Query</Button>
                 </div>
                 }
+                <div>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <ModalHeader toggle={this.toggle}>Your Query: </ModalHeader>
+                    <ModalBody>
+                        {this.state.query}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={this.toggle}>Ok!</Button>
+                    </ModalFooter>
+                </Modal>
+                </div>
 
             </form>
         );
