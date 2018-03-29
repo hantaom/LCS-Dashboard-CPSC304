@@ -52,7 +52,11 @@ class App extends Component {
                 .query({query: queryString})
                 .end(function (err, res) {
                     if (err) {
-                        alert (err.response.text);
+                        alert (err.response.body.detail ||
+                            err.response.body.hint ||
+                            err.response.text +
+                            `\nQUERY: ${queryString}`);
+                        reject(err);
                         return;
                     }
                     that.setData(JSON.parse(res.text));

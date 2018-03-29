@@ -407,9 +407,6 @@ export default class Selection extends React.Component {
                     </select>
                     <br/>
                     <br/>
-                    <Button type="button" color="secondary" value="CLEAR DATA" onClick={this.clearColumns.bind(this)}>Clear
-                        Data
-                    </Button>
                 </label>
                 }
                 <br/>
@@ -448,6 +445,11 @@ export default class Selection extends React.Component {
 
                         </div>))}
                 </label>
+                }
+                <br/>
+                {this.state.selectedTable !== '' && <Button type="button" color="secondary" value="CLEAR DATA" onClick={this.clearColumns.bind(this)}>Clear
+                        Data
+                    </Button>
                 }
                 <br/>
                 <br/>

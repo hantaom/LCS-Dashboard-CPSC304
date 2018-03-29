@@ -617,6 +617,15 @@ export default class Aggregate extends React.Component {
             </label>
             }
             <br/>
+            {this.state.selectedColumns.selected.length > 0 &&
+            <label>
+              <header>Please select any groups: </header>
+              <select multiple={true} value={this.state.selectedGroups.selected} onChange={this.handleGroupChanges}>
+                {this.createGroupOptions()}
+              </select>
+            </label>
+            }
+            <br/>
             {this.state.whereFormStates.length > 0 &&
             <label>
             <h5>Add your conditions:</h5>
@@ -643,6 +652,7 @@ export default class Aggregate extends React.Component {
                 </div>))}
             </label>
             }
+
             {this.state.selectedColumns.selected.length > 0 &&
             <label>
               <header>Please select any groups: </header>
@@ -653,6 +663,8 @@ export default class Aggregate extends React.Component {
             }
               <br/>
               <br/>
+            <br/>
+
             {button}
               {<Button type="button" color="secondary" value="CLEAR DATA" onClick={this.clearColumns.bind(this)}>Clear
                   Data
