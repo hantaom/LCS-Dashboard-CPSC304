@@ -94,7 +94,7 @@ export default class Delete extends React.Component {
             newWhereForm[i] = {
                 conjunction: conjunction,
                 selectedColumn: "",
-                selectedCondition: "",
+                selectedCondition: "<",
                 inputtedValue: ""
             };
         
@@ -161,17 +161,19 @@ export default class Delete extends React.Component {
         queryString = queryString + ';';
         console.log(queryString);
         // Make the post request
-        // let that = this;
-        // request
-        // .post('/api/query')
-        // .set('Content-Type', 'application/x-www-form-urlencoded')
-        // .query({ query: queryString})
-        // .end(function(err, res){
-        //   console.log(res.text);
-        //   alert(res.text);
-        //   that.toggle();
-        // }); 
-        alert(queryString);
+        let that = this;
+        request
+        .post('/api/query')
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+        .query({ query: queryString})
+        .end(function(err, res){
+          console.log(res.text);
+          that.toggle();
+          that.setState({
+            headerNames: that.state.displaySelectedColumns,
+            query: queryString
+        });
+        }); 
         event.preventDefault();
       }
 

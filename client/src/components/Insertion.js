@@ -42,7 +42,6 @@ export default class Selection extends React.Component {
 			.query({query: queryString})
 			.end(function (err, res) {
 				console.log(res.text);
-				that.props.setData(JSON.parse(res.text));
 				that.toggle();
 				that.setState({
 					queryResults: res,
