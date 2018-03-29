@@ -614,6 +614,18 @@ export default class NestedAggregate extends React.Component {
     }
     // #############################################################################################
 
+    clearColumns() {
+        console.log(this.state.displayColumns);
+        this.setState(this.state.displayColumns = []);
+        console.log("clear columns");
+        console.log(this.state.displayColumns);
+        this.setState(this.state.selectedColumns = {selected:[]});
+        console.log(this.state.selectedColumns);
+        this.setState(this.state.joinOptions = {selected:[]})
+        this.setState(this.state.tableNames = {selected:[]})
+        this.setState(this.state.selectedGroups = {selected:[]})
+    }
+
     // Pop-up modal which shows the query
     toggle() {
         this.setState({
@@ -792,6 +804,10 @@ export default class NestedAggregate extends React.Component {
                     }
             <br/>
             <br/>
+              {<Button type="button" color="secondary" value="CLEAR DATA" onClick={this.clearColumns.bind(this)}>Clear
+                  Data
+              </Button>}
+              <br/>
             <br/>
             {button}
             <Button type="submit" color="success">Generate Query</Button>

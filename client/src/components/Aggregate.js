@@ -664,7 +664,6 @@ export default class Aggregate extends React.Component {
               <br/>
               <br/>
             <br/>
-
             {button}
               {<Button type="button" color="secondary" value="CLEAR DATA" onClick={this.clearColumns.bind(this)}>Clear
                   Data
