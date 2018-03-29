@@ -159,19 +159,19 @@ export default class NestedAggregate extends React.Component {
                         if (aggregate.selectedColumn === table_column) {
                             let condition = aggregate.aggregateCondition;
                             if (condition === "avg") {
-                                table_column = "avg(" + table_column + ")";
+                                table_column = "avg(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "min") {
-                                table_column = "min(" + table_column + ")";
+                                table_column = "min(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "max") {
-                                table_column = "max(" + table_column + ")";
+                                table_column = "max(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "sum") {
-                                table_column = "sum(" + table_column + ")";
+                                table_column = "sum(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "count") {
-                                table_column = "count(" + table_column + ")";
+                                table_column = "count(" + table_column + ")" + ' as innerVal ';
                             }
                         }
                     }
-                    queryString = queryString + table_column + ' as innerVal ' + ' ';
+                    queryString = queryString + table_column + ' ';
                 } else {
                     let table_column = query_columns[i];
                     for (let j = 0; j <= aggregates.length - 1; j++) {
@@ -179,15 +179,15 @@ export default class NestedAggregate extends React.Component {
                         if (aggregate.selectedColumn === table_column) {
                             let condition = aggregate.aggregateCondition;
                             if (condition === "avg") {
-                                table_column = "avg(" + table_column + ")";
+                                table_column = "avg(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "min") {
-                                table_column = "min(" + table_column + ")";
+                                table_column = "min(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "max") {
-                                table_column = "max(" + table_column + ")";
+                                table_column = "max(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "sum") {
-                                table_column = "sum(" + table_column + ")";
+                                table_column = "sum(" + table_column + ")" + ' as innerVal ';
                             } else if (condition === "count") {
-                                table_column = "count(" + table_column + ' as innerVal ' + ")";
+                                table_column = "count(" + table_column + ")" + ' as innerVal ';
                             }
                         }
                     }

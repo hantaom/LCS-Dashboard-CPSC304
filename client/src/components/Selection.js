@@ -1,7 +1,7 @@
 import React from "react";
 import request from "superagent";
 import {CONSTANTS} from "../TableConstants";
-import {Button} from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 export default class Selection extends React.Component {
 
@@ -10,6 +10,8 @@ export default class Selection extends React.Component {
         this.state = {
             selectedColumns: {},
             selectedTable: '',
+            modal: false,
+            query: '',
             displayColumns: [],
             displaySelectedColumns: [],
 
@@ -28,22 +30,26 @@ export default class Selection extends React.Component {
         this.handleColumnChanges = this.handleColumnChanges.bind(this);
         this.createColumnOptions = this.createColumnOptions.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.toggle = this.toggle.bind(this);
     };
 
     /* HANDLE FUNCTIONS */
 
     handleSubmit(event) {
         let that = this;
+        let queryString = that.buildQuery();
         request
             .post('/api/query')
             .set('Content-Type', 'application/x-www-form-urlencoded')
-            .query({query: that.buildQuery()})
+            .query({query: queryString})
             .end(function (err, res) {
                 console.log(res.text);
                 that.props.setData(JSON.parse(res.text));
+                that.toggle();
                 that.setState({
                     queryResults: res,
-                    headerNames: that.state.displaySelectedColumns
+                    headerNames: that.state.displaySelectedColumns,
+                    query: queryString
                 });
             });
         event.preventDefault();
@@ -208,6 +214,12 @@ export default class Selection extends React.Component {
         this.setState({whereFormStates: newWhereForm});
     }
 
+    toggle() {
+        this.setState({
+          modal: !this.state.modal
+        });
+      }
+
     render() {
         const button = this.state.whereFormStates.length > 0 ? (
             <div>
@@ -277,6 +289,17 @@ export default class Selection extends React.Component {
                     <Button type="submit" color="success">Generate Query</Button>
                 </div>
                 }
+                <div>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <ModalHeader toggle={this.toggle}>Your Query: </ModalHeader>
+                    <ModalBody>
+                        {this.state.query}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={this.toggle}>Ok!</Button>
+                    </ModalFooter>
+                </Modal>
+                </div>
 
             </form>
         );
