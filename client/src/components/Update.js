@@ -37,15 +37,8 @@ export default class Update extends React.Component {
     handleSubmit(event) {
         let that = this;
         let queryString = that.buildQuery();
-        request
-            .post('/api/query')
-            .set('Content-Type', 'application/x-www-form-urlencoded')
-            .query({query: queryString})
-            .end(function (err, res) {
-                if (err) throw err;
-
-                console.log(res.text);
-                that.toggle();
+        that.props.sendRequest(queryString, this)
+            .then(function(res) {
                 that.setState({
                     queryResults: res,
                     headerNames: [that.state.selectedColumn],

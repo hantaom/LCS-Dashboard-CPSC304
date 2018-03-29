@@ -191,25 +191,19 @@ export default class Selection extends React.Component {
         }
         // Append ending of query
         queryString = queryString + ";";
-        console.log(queryString);
-        // Make the post request
-        let that = this;
-        request
-        .post('/api/query')
-        .set('Content-Type', 'application/x-www-form-urlencoded')
-        .query({ query: queryString})
-        .end(function(err, res){
-          console.log(res.text);
-          that.props.setData(JSON.parse(res.text));
-          that.toggle();
-          that.setState({
-            queryResults: res,
-            headerNames: that.state.displaySelectedColumns,
-            query: queryString
-        });
-          // this.setState(;
-        }); 
-        event.preventDefault();
+          console.log(queryString);
+          // Make the post request
+          let that = this;
+          that.props.sendRequest(queryString, this)
+              .then(function (res) {
+                  that.setState({
+                      queryResults: res,
+                      headerNames: that.state.displaySelectedColumns,
+                      query: queryString
+                  });
+                  // this.setState(;
+              });
+          event.preventDefault();
       }
 
       // Code that fills what is inside the selection boxes

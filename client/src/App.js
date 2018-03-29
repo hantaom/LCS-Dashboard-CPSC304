@@ -43,6 +43,25 @@ class App extends Component {
       this.setState({data:data});
     };
 
+    sendRequest = (queryString, component) => {
+        let that = this;
+        return new Promise(function (resolve, reject) {
+            request
+                .post('/api/query')
+                .set('Content-Type', 'application/x-www-form-urlencoded')
+                .query({query: queryString})
+                .end(function (err, res) {
+                    if (err) {
+                        alert (err.response.text);
+                        return;
+                    }
+                    that.setData(JSON.parse(res.text));
+                    component.toggle();
+                    resolve(res);
+                });
+        });
+    };
+
     // Fetch Query Results
     componentDidMount() {
         this.getQueryResults();
@@ -161,7 +180,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Selection Queries</h4>
-                                    <Selection setData = {this.setData}/>
+                                    <Selection setData = {this.setData} sendRequest = {this.sendRequest} />
                                 </Col>
                             </Row>
                         </TabPane>
@@ -169,7 +188,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Join Queries</h4>
-                                    <Join setData = {this.setData}/>
+                                    <Join setData = {this.setData} sendRequest = {this.sendRequest}/>
                                 </Col>
                             </Row>
                         </TabPane>
@@ -177,7 +196,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Division Queries</h4>
-                                    <Division setData = {this.setData}/>
+                                    <Division setData = {this.setData} sendRequest = {this.sendRequest}/>
                                 </Col>
                             </Row>
                         </TabPane>
@@ -185,7 +204,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Insertion Queries</h4>
-				    <Insertion setData = {this.setData}/>
+				    <Insertion setData = {this.setData} sendRequest = {this.sendRequest}/>
                                 </Col>
                             </Row>
                         </TabPane>
@@ -193,7 +212,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Aggregation Queries</h4>
-                                    <Aggregate setData = {this.setData}/>
+                                    <Aggregate setData = {this.setData} sendRequest = {this.sendRequest}/>
                                 </Col>
                             </Row>
                         </TabPane>
@@ -201,7 +220,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Nested Aggregation Queries</h4>
-                                    <NestedAggregate setData = {this.setData}/>
+                                    <NestedAggregate setData = {this.setData} sendRequest = {this.sendRequest}/>
                                 </Col>
                             </Row>
                         </TabPane>
@@ -209,7 +228,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Deletion Queries</h4>
-                                    <Delete setData = {this.setData}/>
+                                    <Delete setData = {this.setData} sendRequest = {this.sendRequest}/>
                                 </Col>
                             </Row>
                         </TabPane>
@@ -217,7 +236,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Update Queries</h4>
-                                    <Update setData = {this.setData}/>
+                                    <Update setData = {this.setData} sendRequest = {this.sendRequest}/>
                                 </Col>
                             </Row>
                         </TabPane>

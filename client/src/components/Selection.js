@@ -43,14 +43,8 @@ export default class Selection extends React.Component {
     handleSubmit(event) {
         let that = this;
         let queryString = that.buildQuery();
-        request
-            .post('/api/query')
-            .set('Content-Type', 'application/x-www-form-urlencoded')
-            .query({query: queryString})
-            .end(function (err, res) {
-                console.log(res.text);
-                that.props.setData(JSON.parse(res.text));
-                that.toggle();
+        that.props.sendRequest(queryString, this)
+            .then(function(res) {
                 that.setState({
                     queryResults: res,
                     headerNames: that.state.displaySelectedColumns,
