@@ -422,8 +422,8 @@ export default class Aggregate extends React.Component {
         let i = newAggregateForm.length;
 
         newAggregateForm[i] = {
-            selectedColumn: "",
-            aggregateCondition: ""
+            selectedColumn: this.state.selectedColumns.selected[0],
+            aggregateCondition: "avg"
         };
 
         this.setState({aggregateFormStates: newAggregateForm});

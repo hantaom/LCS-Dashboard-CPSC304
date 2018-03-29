@@ -10,7 +10,6 @@ export default class Selection extends React.Component {
         this.state = {
             selectedColumns: {},
             selectedTable: '',
-            displayColumns: [],
             displaySelectedColumns: [],
 
             whereFormStates: []
@@ -23,12 +22,16 @@ export default class Selection extends React.Component {
                 };
              */
         };
+
         // Bind this to the function you need
         this.handleTableChanges = this.handleTableChanges.bind(this);
         this.handleColumnChanges = this.handleColumnChanges.bind(this);
         this.createColumnOptions = this.createColumnOptions.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     };
+    componentDidMount(){
+
+    }
 
     /* HANDLE FUNCTIONS */
 
@@ -208,6 +211,16 @@ export default class Selection extends React.Component {
         this.setState({whereFormStates: newWhereForm});
     }
 
+    clearColumns(){
+        console.log(this.state.displaySelectedColumns);
+        this.state.displaySelectedColumns = [];
+        console.log("clear columns");
+        console.log(this.state.displaySelectedColumns);
+        this.state.selectedColumns = [];
+        console.log(this.state.selectedColumns);
+    }
+
+
     render() {
         const button = this.state.whereFormStates.length > 0 ? (
             <div>
@@ -238,6 +251,10 @@ export default class Selection extends React.Component {
                             onChange={this.handleColumnChanges}>
                         {this.createColumnOptions()}
                     </select>
+                    <br/>
+                    <br/>
+                    <Button type="button" color="secondary" value = "CLEAR DATA" onClick = {this.clearColumns.bind(this)}>Clear
+                    </Button>
                 </label>
                 }
                 <br/>

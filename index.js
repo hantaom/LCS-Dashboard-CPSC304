@@ -22,7 +22,7 @@ const client = new pg.Client({
 
 client.connect();
 const qh = new QueryHandler(client);
-qh.getAndParsePlayerStats();
+// qh.getAndParsePlayerStats();
 
 // Hantao PostgreSQL code
 // ######################################################################################################
