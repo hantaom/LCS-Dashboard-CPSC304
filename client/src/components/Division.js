@@ -41,21 +41,20 @@ export default class Division extends React.Component {
 
 	handleSubmit(event) {
 		let queryString = this.buildQuery();
-		if (queryString === undefined) {
-			return;
-		}
-		let that = this;
-		request.post('/api/query')
-			.set('Content-type', 'application/x-www-form-urlencoded')
-			.query({query: queryString})
-			.end(function(err, res) {
-				that.props.setData(JSON.parse(res.text));
-				that.setState({
-					queryResults: res,
-					headerNames: that.state.dividendColumns.current
+		if (queryString !== undefined) {
+			let that = this;
+			request.post('/api/query')
+				.set('Content-type', 'application/x-www-form-urlencoded')
+				.query({query: queryString})
+				.end(function(err, res) {
+					that.props.setData(JSON.parse(res.text));
+					that.setState({
+						queryResults: res,
+						headerNames: that.state.dividendColumns.current
+					});
 				});
-			});
-		event.preventDefault();
+			event.preventDefault();
+		}
 	}
 	buildQuery() {
 		let divisorClause = this.buildDivisorClause(); //select+from+where
@@ -232,6 +231,9 @@ export default class Division extends React.Component {
 		const newColumns = dividendColumns;
 		for (let i = 0; i < newTables.current.length; i++) {
 			let table = newTables.current[i];
+			if (table == null) {
+				continue;
+			}
 			const array = tables[table].attr;
 			for (let j = 0; j < array.length; j++) {
 				let attribute = array[j];
@@ -248,6 +250,9 @@ export default class Division extends React.Component {
 		const newColumns = divisorColumns;
 		for (let i = 0; i < newTables.current.length; i++) {
 			let table = newTables.current[i];
+			if (table == null) {
+				continue;
+			}
 			const array = tables[table].attr;
 			for (let j = 0; j < array.length; j++) {
 				let attribute = array[j];
