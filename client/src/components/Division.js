@@ -284,6 +284,8 @@ export default class Division extends React.Component {
 						{this.createDividendColumnOptions()}
 					</select>
 				</label>
+				<br/>
+				<br/>
 				<label>
 					<header>that corresponds to</header>
 					<select
@@ -294,6 +296,8 @@ export default class Division extends React.Component {
 						{this.createModeOptions()}
 					</select>
 				</label>
+				<br/>
+				<br/>
 				<label>
 					<header>the table below</header>
 					<select
@@ -311,7 +315,10 @@ export default class Division extends React.Component {
 						{this.createDivisorColumnOptions()}
 					</select>
 				</label>
+				<br/>
 				<Button type="submit" color="success">Generate Query</Button>
+				<br/>
+				<br/>
 			</form>
 		);
 	}
