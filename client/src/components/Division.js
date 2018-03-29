@@ -43,10 +43,9 @@ export default class Division extends React.Component {
 	}
 
 	handleSubmit(event) {
-		// let queryString = this.buildQuery();
-		let queryString = undefined;
+		let queryString = this.buildQuery();
 		if (queryString === undefined) {
-			queryString = "select * from players;";
+			queryString = "SELECT * FROM PLAYERS;";
 		}
 		console.log(queryString);
 		let that = this;
@@ -58,7 +57,8 @@ export default class Division extends React.Component {
 				that.toggle();
 				that.setState({
 					queryResults: res,
-					headerNames: that.state.dividendColumns.current
+					headerNames: that.state.dividendColumns.current,
+					query: queryString
 				});
 			});
 		event.preventDefault();

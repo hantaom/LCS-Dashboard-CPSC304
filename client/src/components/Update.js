@@ -45,7 +45,6 @@ export default class Update extends React.Component {
                 if (err) throw err;
 
                 console.log(res.text);
-                that.props.setData(JSON.parse(res.text));
                 that.toggle();
                 that.setState({
                     queryResults: res,

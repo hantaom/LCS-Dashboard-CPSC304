@@ -131,7 +131,7 @@ export default class Delete extends React.Component {
         let query_table = this.state.selectedTable;
         let query_filters = this.state.whereFormStates;
         console.log(JSON.stringify(query_filters));
-        let queryString = 'delete from ';
+        let queryString = 'DELETE FROM ';
         // Generate the "FROM" part of the query string
         if (query_table !== '') {
             queryString = queryString + query_table;

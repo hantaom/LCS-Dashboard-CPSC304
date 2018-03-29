@@ -137,7 +137,7 @@ export default class Selection extends React.Component {
         let query_columns = this.state.selectedColumns.selected;
         let query_joins = this.state.joinOptions.selected;
         let query_filters = this.state.whereFormStates;
-        let queryString = 'select ';
+        let queryString = 'SELECT ';
         // Generate the SELECT part of the query string
         if (query_columns.length > 0) {
             for (let i = 0; i <= query_columns.length - 1; i++) {
@@ -150,18 +150,18 @@ export default class Selection extends React.Component {
         }
         // Generate the "FROM" part of the query string
         if (query_tables.length > 0) {
-            queryString = queryString + "from ";
+            queryString = queryString + "FROM ";
             for (let i = 0; i <= query_tables.length - 1; i++) {
                 if (i === 0) {
                     queryString = queryString + query_tables[i] + ' ';
                 } else {
-                    queryString = queryString + "inner join " + query_tables[i] + ' ';
+                    queryString = queryString + "INNER JOIN " + query_tables[i] + ' ';
                 }
             }
         }
         // Generate the INNER JOIN part of the query string
         if (query_joins.length > 0) {
-            queryString = queryString + "on ";
+            queryString = queryString + "ON ";
             for (let i = 0; i <= query_joins.length - 1; i++) {
                 if (i === 0) {
                     queryString = queryString + query_joins[i];
@@ -170,7 +170,7 @@ export default class Selection extends React.Component {
         }
         // Generate the WHERE part of the query string
         if (query_filters.length > 0) {
-            queryString = queryString + " where ";
+            queryString = queryString + " WHERE ";
             for (let i = 0; i <= query_filters.length - 1; i++) {
                 if (i === 0) {
                     let conj = query_filters[i].conjunction;

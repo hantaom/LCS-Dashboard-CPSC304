@@ -66,8 +66,8 @@ export default class Selection extends React.Component {
 	}
 	buildQuery() {
 		let { tables,columns } = this.state;
-		let insertClause = "insert into " + tables.selected + " (";
-		let valueClause = "values (";
+		let insertClause = "INSERT INTO " + tables.selected + " (";
+		let valueClause = "VALUES (";
 		let appended = false;
 		for (let key in columns) {
 			if (key === "selected") {

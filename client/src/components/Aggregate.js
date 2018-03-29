@@ -152,15 +152,15 @@ export default class Aggregate extends React.Component {
                         if (aggregate.selectedColumn === table_column) {
                             let condition = aggregate.aggregateCondition;
                             if (condition === "avg") {
-                                table_column = "avg(" + table_column + ")";
+                                table_column = "AVG(" + table_column + ")";
                             } else if (condition === "min") {
-                                table_column = "min(" + table_column + ")";
+                                table_column = "MIN(" + table_column + ")";
                             } else if (condition === "max") {
-                                table_column = "max(" + table_column + ")";
+                                table_column = "MAX(" + table_column + ")";
                             } else if (condition === "sum") {
-                                table_column = "sum(" + table_column + ")";
+                                table_column = "SUM(" + table_column + ")";
                             } else if (condition === "count") {
-                                table_column = "count(" + table_column + ")";
+                                table_column = "COUNT(" + table_column + ")";
                             }
                         }
                     }
@@ -172,15 +172,15 @@ export default class Aggregate extends React.Component {
                         if (aggregate.selectedColumn === table_column) {
                             let condition = aggregate.aggregateCondition;
                             if (condition === "avg") {
-                                table_column = "avg(" + table_column + ")";
+                                table_column = "AVG(" + table_column + ")";
                             } else if (condition === "min") {
-                                table_column = "min(" + table_column + ")";
+                                table_column = "MIN(" + table_column + ")";
                             } else if (condition === "max") {
-                                table_column = "max(" + table_column + ")";
+                                table_column = "MAX(" + table_column + ")";
                             } else if (condition === "sum") {
-                                table_column = "sum(" + table_column + ")";
+                                table_column = "SUM(" + table_column + ")";
                             } else if (condition === "count") {
-                                table_column = "count(" + table_column + ")";
+                                table_column = "COUNT(" + table_column + ")";
                             }
                         }
                     }
@@ -207,7 +207,7 @@ export default class Aggregate extends React.Component {
         let query_filters = this.state.whereFormStates;
         let query_joins = this.state.joinOptions.selected;
         let query_groups = this.state.selectedGroups.selected;
-        let queryString = 'select ';
+        let queryString = 'SELECT ';
 
         // Generate the SELECT part of the query string
         if (query_columns.length > 0) {
@@ -215,18 +215,18 @@ export default class Aggregate extends React.Component {
         }
         // Generate the "FROM" part of the query string
         if (query_tables.length > 0) {
-            queryString = queryString + "from ";
+            queryString = queryString + "FROM ";
             for (let i = 0; i <= query_tables.length - 1; i++) {
                 if (i === 0) {
                     queryString = queryString + query_tables[i] + ' ';
                 } else {
-                    queryString = queryString + "inner join " + query_tables[i] + ' ';
+                    queryString = queryString + "INNER JOIN " + query_tables[i] + ' ';
                 }
             }
         }
         // Generate the INNER JOIN part of the query string
         if (query_joins.length > 0) {
-            queryString = queryString + "on ";
+            queryString = queryString + "ON ";
             for (let i = 0; i <= query_joins.length - 1; i++) {
                 if (i === 0) {
                     queryString = queryString + query_joins[i];
@@ -235,7 +235,7 @@ export default class Aggregate extends React.Component {
         }
         // Generate the WHERE part of the query string
         if (query_filters.length > 0) {
-            queryString = queryString + " where ";
+            queryString = queryString + " WHERE ";
             for (let i = 0; i <= query_filters.length - 1; i++) {
                 if (i === 0) {
                     let conj = query_filters[i].conjunction;
@@ -256,7 +256,7 @@ export default class Aggregate extends React.Component {
         }
 
         if (query_groups.length > 0) {
-            queryString = queryString + ' group by ';
+            queryString = queryString + ' GROUP BY ';
             for (let i = 0; i <= query_groups.length - 1; i++) {
                 if (i === query_groups.length - 1) {
                     let group_column = query_groups[i];
