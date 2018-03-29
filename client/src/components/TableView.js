@@ -25,6 +25,7 @@ render()
         };
         var data = this.props.data;
         console.log("Inside TableView");
+        console.log(data);
 
         var columns = {columns:[]};
 

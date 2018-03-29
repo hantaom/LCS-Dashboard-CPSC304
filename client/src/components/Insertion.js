@@ -1,7 +1,8 @@
 import React from "react";
 import request from "superagent";
 import {CONSTANTS} from "../TableConstants";
-import {Button} from 'reactstrap';
+import './Insertion.css';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 export default class Selection extends React.Component {
 
@@ -10,6 +11,8 @@ export default class Selection extends React.Component {
 		this.state = {
 			tables: {selected:""},
 			columns: {},
+			modal: false,
+			query: ''
 		}
 		let tables = this.state.tables;
 		tables["team"] = {attr: {team_name:"",head_coach:""}};
@@ -27,20 +30,23 @@ export default class Selection extends React.Component {
 		this.handleInputChanges = this.handleInputChanges.bind(this);
 		this.createTableOptions = this.createTableOptions.bind(this);
 		this.createColumns = this.createColumns.bind(this);
+		this.toggle = this.toggle.bind(this);
 	}
 
 	handleSubmit(event) {
 		let that = this;
+		let queryString = this.buildQuery();
 		request
 			.post('/api/query')
 			.set('Content-Type', 'application/x-www-form-urlencoded')
-			.query({query: that.buildQuery()})
+			.query({query: queryString})
 			.end(function (err, res) {
 				console.log(res.text);
-				that.props.setData(JSON.parse(res.text));
+				that.toggle();
 				that.setState({
 					queryResults: res,
-					headerNames: that.state.columns.selected
+					headerNames: that.state.columns.selected,
+					query: queryString
 				});
 			});
 		event.preventDefault();
@@ -122,6 +128,21 @@ export default class Selection extends React.Component {
 		return items;
 	}
 
+    clearColumns(){
+        console.log(this.state.displaySelectedColumns);
+        this.state.displaySelectedColumns = [];
+        console.log("clear columns");
+        console.log(this.state.displaySelectedColumns);
+        this.state.selectedColumns = [];
+        console.log(this.state.selectedColumns);
+    }
+
+	toggle() {
+        this.setState({
+          modal: !this.state.modal
+        });
+      }
+
 	render() {
 		return (
 		   <form onSubmit={this.handleSubmit}>
@@ -139,9 +160,11 @@ export default class Selection extends React.Component {
 				{
 					this.state.tables.selected !== ""
 						&&
-					<label>
-						{this.createColumns()}
-					</label>
+					<div className="inputValues">
+						<label>
+							{this.createColumns()}
+						</label>
+					</div>
 				}
 				<br/>
 				<br/>
@@ -150,7 +173,19 @@ export default class Selection extends React.Component {
 						&&
 					<Button type="submit" color="success">Generate Query</Button>
 				}
+				<div>
+					<Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+						<ModalHeader toggle={this.toggle}>Your Query: </ModalHeader>
+						<ModalBody>
+							{this.state.query}
+						</ModalBody>
+						<ModalFooter>
+							<Button color="primary" onClick={this.toggle}>Ok!</Button>
+						</ModalFooter>
+					</Modal>
+            	</div>
 			</form>
+			
 		);
 	}
 }

@@ -9,8 +9,9 @@ import Division from "./components/Division";
 import Aggregate from "./components/Aggregate";
 import Update from "./components/Update";
 import NestedAggregate from "./components/NestedAggregate";
+import Login from "./components/Login";
+import {TabContent, TabPane, Nav, NavItem, NavLink, Row, Col} from 'reactstrap';
 import Insertion from "./components/Insertion";
-import {TabContent, TabPane, Nav, NavItem, NavLink, Button, Row, Col} from 'reactstrap';
 
 class App extends Component {
     // Initialize state
@@ -78,6 +79,7 @@ class App extends Component {
         const {queryResults} = this.state;
         return (
             <div className="App">
+                <Login/>
                 <h1 className="title"> LCS Dashboard </h1>
                 <div className="contentBody">
                     <Nav tabs>

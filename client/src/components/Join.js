@@ -1,5 +1,6 @@
 import React from "react";
 import {CONSTANTS} from "../TableConstants";
+import './Login.css';
 import request from 'superagent';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
@@ -294,6 +295,12 @@ export default class Selection extends React.Component {
                 return toRemove.indexOf( el ) < 0;
             });
         }
+
+        // Add the SELECT * option
+        if (!columns.includes("*")) {
+            columns.push("*");
+        }
+
         for (let i = 0; i <= columns.length - 1; i++) {             
              items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);   
         }
@@ -352,6 +359,15 @@ export default class Selection extends React.Component {
         this.setState({whereFormStates: newWhereForm});
     }
 
+    clearColumns(){
+        console.log(this.state.displayColumns);
+        this.state.displayColumns = [];
+        console.log("clear columns");
+        console.log(this.state.displayColumns);
+        this.state.selectedColumns = [];
+        console.log(this.state.selectedColumns);
+    }
+
     toggle() {
         this.setState({
           modal: !this.state.modal
@@ -389,6 +405,10 @@ export default class Selection extends React.Component {
               <select multiple={true} value={this.state.selectedColumns.selected} onChange={this.handleColumnChanges}>
                 {this.createColumnOptions()}
               </select>
+                <br/>
+                <br/>
+                <Button type="button" color="secondary" value = "CLEAR DATA" onClick = {this.clearColumns.bind(this)}>Clear Data
+                </Button>
             </label>
             }
             <br/>

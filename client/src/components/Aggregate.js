@@ -372,6 +372,12 @@ export default class Aggregate extends React.Component {
                 return toRemove.indexOf( el ) < 0;
             });
         }
+
+        // Add the SELECT * option
+        if (!columns.includes("*")) {
+            columns.push("*");
+        }
+
         for (let i = 0; i <= columns.length - 1; i++) {             
              items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);   
         }
@@ -438,8 +444,8 @@ export default class Aggregate extends React.Component {
         let i = newAggregateForm.length;
 
         newAggregateForm[i] = {
-            selectedColumn: "",
-            aggregateCondition: ""
+            selectedColumn: this.state.selectedColumns.selected[0],
+            aggregateCondition: "avg"
         };
 
         this.setState({aggregateFormStates: newAggregateForm});
@@ -486,6 +492,15 @@ export default class Aggregate extends React.Component {
         let id = event.target.id;
         forms.splice(id, 1);
         this.setState({aggregateFormStates: forms});
+    }
+
+    clearColumns(){
+        console.log(this.state.displaySelectedColumns);
+        this.state.displaySelectedColumns = [];
+        console.log("clear columns");
+        console.log(this.state.displaySelectedColumns);
+        this.state.selectedColumns = [];
+        console.log(this.state.selectedColumns);
     }
 
     toggle() {
