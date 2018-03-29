@@ -11,6 +11,7 @@ import Update from "./components/Update";
 import NestedAggregate from "./components/NestedAggregate";
 import Login from "./components/Login";
 import {TabContent, TabPane, Nav, NavItem, NavLink, Row, Col} from 'reactstrap';
+import Insertion from "./components/Insertion";
 
 class App extends Component {
     // Initialize state
@@ -184,6 +185,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Insertion Queries</h4>
+				    <Insertion setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>
