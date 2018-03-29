@@ -9,13 +9,13 @@ export default class Selection extends React.Component {
 		super(props);
 		this.state = {
 			tables: {selected:""},
-			columns: {selected:[]},
+			columns: {selected:[]}
 		}
 		let tables = this.state.tables;
 		tables["team"] = {attr: {team_name:"",head_coach:""}};
 		tables["players"] = {attr: {pl_name:"",position:"",team_name:"",rating:0.5}};
-		tables["champion"] = {attr: {ch_name:"",win_rate:0.5,pick_rate:0.5,"ban_rate"]};
-		tables["game"] = {attr: {game_id:"",team_red","team_blue","game_time","result","duration","patch"]};
+		tables["champion"] = {attr: {ch_name:"",win_rate:0.5,pick_rate:0.5,ban_rate: 0.5}};
+		//tables["game"] = {attr: {game_id:"","team_red","team_blue","game_time","result","duration","patch"}};
 		tables["game_stats"] = {attr: ["game_id","first_blood","total_gold_red","total_gold_blue","total_champ_kill"]};
 		tables["player_stats"]= {attr: ["pl_name","games_played","cs_per_min","assists","kda","minutes_played","cs_total","kills","deaths","kill_participation"]};
 		tables["team_stats"] = {attr: ["team_name","games_played","wins","total_deaths","total_assists","avg_game_time"]};
