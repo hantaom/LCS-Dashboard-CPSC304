@@ -12,7 +12,7 @@ const kenPSQL = 'postgres://cjken@localhost:5432/test';
 const ianPSQL = 'postgres://postgres: @localhost:5432/LCS'
 
 const pg = require('pg');
-const myConnectionString = process.env.DATABASE_URL || isaiahPSQL; // replace this with your name/password
+const myConnectionString = process.env.DATABASE_URL || hantaoPSQL; // replace this with your name/password
 
 const client = new pg.Client({
     connectionString: myConnectionString

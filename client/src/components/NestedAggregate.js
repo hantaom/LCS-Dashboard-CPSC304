@@ -313,7 +313,7 @@ export default class NestedAggregate extends React.Component {
         }
 
         if (query_groups.length > 0) {
-            queryString = queryString + 'GROUP BY ';
+            queryString = queryString + ' GROUP BY ';
             for (let i = 0; i <= query_groups.length - 1; i++) {
                 if (i === query_groups.length - 1) {
                     let group_column = query_groups[i];
@@ -499,11 +499,12 @@ export default class NestedAggregate extends React.Component {
         let conjunction = event.target.value;
         let i = newAggregateForm.length;
         let selectedColumns = this.state.selectedColumns.selected;
-
-        newAggregateForm[i] = {
-            selectedColumn: selectedColumns[0],
-            aggregateCondition: "avg"
-        };
+        if (i === 0) {
+            newAggregateForm[i] = {
+                selectedColumn: selectedColumns[0],
+                aggregateCondition: "avg"
+            };
+        }
 
         this.setState({aggregateFormStates: newAggregateForm});
     }
@@ -559,10 +560,12 @@ export default class NestedAggregate extends React.Component {
         let i = newAggregateForm.length;
         let selectedColumns = this.state.selectedColumns.selected;
 
-        newAggregateForm[i] = {
-            selectedColumn: selectedColumns[0],
-            aggregateCondition: "avg"
-        };
+        if (i === 0) {
+            newAggregateForm[i] = {
+                selectedColumn: selectedColumns[0],
+                aggregateCondition: "avg"
+            };
+        }
 
         this.setState({nestedAggregateFormStates: newAggregateForm});
     }
