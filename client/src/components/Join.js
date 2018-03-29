@@ -295,6 +295,12 @@ export default class Selection extends React.Component {
                 return toRemove.indexOf( el ) < 0;
             });
         }
+
+        // Add the SELECT * option
+        if (!columns.includes("*")) {
+            columns.push("*");
+        }
+
         for (let i = 0; i <= columns.length - 1; i++) {             
              items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);   
         }

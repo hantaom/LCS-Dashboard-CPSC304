@@ -7,7 +7,7 @@ const QueryHandler = require('./query.js');
 // postgres://yourname:yourpassword@localhost:5432/nameOfDatabase
 
 const isaiahPSQL = 'postgres://wiji:isaiah@localhost:5432/templcs';
-const hantaoPSQL = 'postgres://hantao:Password1@localhost:5432/demodb';
+const hantaoPSQL = 'postgres://hantao:Password1@localhost:5432/demo1';
 const kenPSQL = 'postgres://cjken@localhost:5432/test';
 const ianPSQL = 'postgres://postgres: @localhost:5432/LCS'
 
@@ -20,20 +20,7 @@ const client = new pg.Client({
 
 client.connect();
 const qh = new QueryHandler(client);
-qh.getAndParsePlayerStats();
-
-// Hantao PostgreSQL code
-// ######################################################################################################
-// let queryResults = [];
-// client.query('SELECT * FROM PLAYERS;', (err, res) => {
-//   if (err) throw err;
-//   for (let row of res.rows) {
-//     queryResults.push(row["pl_name"]);
-//   }
-//   // console.log(JSON.stringify(queryResults));
-//   client.end();
-// });
-
+// qh.getAndParsePlayerStats();
 
 // Express code
 // ######################################################################################################
