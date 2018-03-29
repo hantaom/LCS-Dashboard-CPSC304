@@ -269,7 +269,7 @@ export default class Selection extends React.Component {
                     </select>
                     <br/>
                     <br/>
-                    <Button type="button" color="secondary" value = "CLEAR DATA" onClick = {this.clearColumns.bind(this)}>Clear
+                    <Button type="button" color="secondary" value = "CLEAR DATA" onClick = {this.clearColumns.bind(this)}>Clear Data
                     </Button>
                 </label>
                 }

@@ -129,6 +129,15 @@ export default class Selection extends React.Component {
 		return items;
 	}
 
+    clearColumns(){
+        console.log(this.state.displaySelectedColumns);
+        this.state.displaySelectedColumns = [];
+        console.log("clear columns");
+        console.log(this.state.displaySelectedColumns);
+        this.state.selectedColumns = [];
+        console.log(this.state.selectedColumns);
+    }
+
 	toggle() {
         this.setState({
           modal: !this.state.modal

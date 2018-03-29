@@ -353,6 +353,15 @@ export default class Selection extends React.Component {
         this.setState({whereFormStates: newWhereForm});
     }
 
+    clearColumns(){
+        console.log(this.state.displayColumns);
+        this.state.displayColumns = [];
+        console.log("clear columns");
+        console.log(this.state.displayColumns);
+        this.state.selectedColumns = [];
+        console.log(this.state.selectedColumns);
+    }
+
     toggle() {
         this.setState({
           modal: !this.state.modal
@@ -390,6 +399,10 @@ export default class Selection extends React.Component {
               <select multiple={true} value={this.state.selectedColumns.selected} onChange={this.handleColumnChanges}>
                 {this.createColumnOptions()}
               </select>
+                <br/>
+                <br/>
+                <Button type="button" color="secondary" value = "CLEAR DATA" onClick = {this.clearColumns.bind(this)}>Clear Data
+                </Button>
             </label>
             }
             <br/>

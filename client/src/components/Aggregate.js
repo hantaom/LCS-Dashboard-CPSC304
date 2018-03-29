@@ -488,6 +488,15 @@ export default class Aggregate extends React.Component {
         this.setState({aggregateFormStates: forms});
     }
 
+    clearColumns(){
+        console.log(this.state.displaySelectedColumns);
+        this.state.displaySelectedColumns = [];
+        console.log("clear columns");
+        console.log(this.state.displaySelectedColumns);
+        this.state.selectedColumns = [];
+        console.log(this.state.selectedColumns);
+    }
+
     toggle() {
         this.setState({
           modal: !this.state.modal
