@@ -9,6 +9,7 @@ const QueryHandler = require('./query.js');
 const isaiahPSQL = 'postgres://wiji:isaiah@localhost:5432/templcs';
 const hantaoPSQL = 'postgres://hantao:Password1@localhost:5432/demodb';
 const kenPSQL = 'postgres://cjken@localhost:5432/test';
+const ianPSQL = 'postgres://postgres: @localhost:5432/LCS'
 
 const pg = require('pg');
 const myConnectionString = process.env.DATABASE_URL || kenPSQL; // replace this with your name/password

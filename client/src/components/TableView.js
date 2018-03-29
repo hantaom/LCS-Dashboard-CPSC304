@@ -20,7 +20,7 @@ render()
             ban_rate: "Ban Rate", game_id: "Game ID", team_red: "Team Red", team_blue: "Team Blue", time: "Date", result: "Result", duration: "Duration",
             patch: "Patch Version", first_blood: "First Blood", total_gold_red: "Total Gold (Red)", total_gold_blue: "Total Gold (Blue)", total_champ_kills: "Total Kills (Champions)",
             head_coach: "Head Coach", wins: "Wins", losses: "Losses", teamkd: "Team KDA", total_kills: "Total Kills", total_deaths: "Total Deaths", total_assists: "Total Assists",
-            avg_game_time: "Average Game Time"
+            avg_game_time: "Average Game Time", count: "Count", min: "Min", max: "Max", sum: "Sum", avg: "Average"
         };
         var data = this.props.data;
         console.log("Inside TableView");
