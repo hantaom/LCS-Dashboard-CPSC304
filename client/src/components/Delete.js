@@ -142,7 +142,7 @@ export default class Delete extends React.Component {
             for (let i = 0; i <= query_filters.length - 1; i++) {
                 if (i === 0) {
                     let conj = query_filters[i].conjunction;
-                    let column = <query_filters i="" className="selectedColu"></query_filters>mn;
+                    let column = <query_filters i="" className="selectedColu"></query_filters>;
                     let op = query_filters[i].selectedCondition;
                     let value = "\'" + query_filters[i].inputtedValue + "\'";
                     let filter = column + " " + op + " " + value;
