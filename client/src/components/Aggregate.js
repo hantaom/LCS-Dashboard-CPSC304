@@ -11,6 +11,7 @@ export default class Aggregate extends React.Component {
         this.state = {tableNames: {selected: []},
                       modal: false,
                       selectedColumns: {selected: []},
+                      selectedGroups: {selected: []},
                       query: '',
                       joinOptions: {selected: []},
                       displayColumns: [],
@@ -37,6 +38,8 @@ export default class Aggregate extends React.Component {
         this.handleTableChanges = this.handleTableChanges.bind(this);
         this.handleColumnChanges = this.handleColumnChanges.bind(this);
         this.handleJoinChanges = this.handleJoinChanges.bind(this);
+        this.handleGroupChanges = this.handleGroupChanges.bind(this);
+        this.createGroupOptions = this.createGroupOptions.bind(this);
         this.createColumnOptions = this.createColumnOptions.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.toggle = this.toggle.bind(this);
@@ -280,7 +283,7 @@ export default class Aggregate extends React.Component {
         let tables = ["team", "players", "champion", "game", "game_stats", "player_stats", "team_stats", "plays_in"];
         for (let i = 0; i <= tables.length - 1; i++) {             
             // Dynamically set the options for tables 
-            items.push(<option value={tables[i]}>{tables[i]}</option>);   
+            items.push(<option key={i} value={tables[i]}>{tables[i]}</option>);   
         }
         return items;
     }
@@ -357,7 +360,7 @@ export default class Aggregate extends React.Component {
             });
         }
         for (let i = 0; i <= columns.length - 1; i++) {             
-             items.push(<option value={columns[i]}>{columns[i]}</option>);   
+             items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);   
         }
         return items;
     }
@@ -480,6 +483,39 @@ export default class Aggregate extends React.Component {
 
     // #######################################################################################
 
+    // Group by functions
+
+    handleGroupChanges(event) {
+        const newColumns = this.state.selectedGroups;
+        let selected = [];
+        if (newColumns.hasOwnProperty(event.target.value)) {
+            delete newColumns[event.target.value];
+        } else {
+            if (!newColumns.hasOwnProperty(event.target.value)) {
+                newColumns[event.target.value] = event.target.value;
+            }
+        }
+        for (var key in newColumns) {
+            if (newColumns.hasOwnProperty(key) && key !== "selected") {
+                selected.push(key);
+            }
+        }
+        this.state.selectedGroups.selected = selected;
+        this.setState({selectedGroups: newColumns});
+      }
+
+      createGroupOptions() {
+        let items = [];
+        let columns = this.state.selectedColumns.selected;
+
+        for (let i = 0; i <= columns.length - 1; i++) {             
+            items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);   
+        }
+        return items;
+      }
+
+
+
     
       render() {
         const button = this.state.whereFormStates.length > 0 ? (
@@ -583,6 +619,14 @@ export default class Aggregate extends React.Component {
             </label>
             }
             <br/>
+            {this.state.selectedColumns.selected.length > 0 &&
+            <label>
+              <header>Please select any groups: </header>
+              <select multiple={true} value={this.state.selectedGroups.selected} onChange={this.handleGroupChanges}>
+                {this.createGroupOptions()}
+              </select>
+            </label>
+            }
             <br/>
             {button}
             <Button type="submit" color="success">Generate Query</Button>

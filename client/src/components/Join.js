@@ -214,7 +214,7 @@ export default class Selection extends React.Component {
         let tables = ["team", "players", "champion", "game", "game_stats", "player_stats", "team_stats", "plays_in"];
         for (let i = 0; i <= tables.length - 1; i++) {             
             // Dynamically set the options for tables 
-            items.push(<option value={tables[i]}>{tables[i]}</option>);   
+            items.push(<option key={i} value={tables[i]}>{tables[i]}</option>);   
         }
         return items;
     }
@@ -291,7 +291,7 @@ export default class Selection extends React.Component {
             });
         }
         for (let i = 0; i <= columns.length - 1; i++) {             
-             items.push(<option value={columns[i]}>{columns[i]}</option>);   
+             items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);   
         }
         return items;
     }
@@ -317,7 +317,7 @@ export default class Selection extends React.Component {
         }
         for (let i = 0; i <= joinFilters.length - 1; i++) {             
             // Dynamically set the options for tables 
-            items.push(<option value={joinFilters[i]}>{joinFilters[i]}</option>);   
+            items.push(<option key={i} value={joinFilters[i]}>{joinFilters[i]}</option>);   
         }
         return items;
     }

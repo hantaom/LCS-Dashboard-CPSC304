@@ -3,11 +3,12 @@ import './App.css';
 import TableView from "./components/TableView";
 import request from 'superagent';
 import Selection from "./components/Selection";
-import Join from "./components/Join"
-import Delete from "./components/Delete"
-import {TabContent, TabPane, Nav, NavItem, NavLink, Button, Row, Col} from 'reactstrap';
+import Join from "./components/Join";
+import Delete from "./components/Delete";
+import Division from "./components/Division";
 import Aggregate from "./components/Aggregate";
 import Update from "./components/Update";
+import {TabContent, TabPane, Nav, NavItem, NavLink, Button, Row, Col} from 'reactstrap';
 
 class App extends Component {
     // Initialize state
@@ -172,6 +173,7 @@ class App extends Component {
                             <Row>
                                 <Col sm="12">
                                     <h4>Division Queries</h4>
+                                    <Division setData = {this.setData}/>
                                 </Col>
                             </Row>
                         </TabPane>

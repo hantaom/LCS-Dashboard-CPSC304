@@ -178,7 +178,7 @@ export default class Selection extends React.Component {
         if (!columns) return;
 
         for (let i = 0; i <= columns.length - 1; i++) {
-            items.push(<option value={columns[i]}>{columns[i]}</option>);
+            items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);
         }
 
         console.log(items);
