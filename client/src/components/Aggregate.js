@@ -207,6 +207,7 @@ export default class Aggregate extends React.Component {
         let aggregates = this.state.aggregateFormStates;
         let query_filters = this.state.whereFormStates;
         let query_joins = this.state.joinOptions.selected;
+        let query_groups = this.state.selectedGroups.selected;
         console.log(JSON.stringify(aggregates));
         let queryString = 'select ';
         // Generate the SELECT part of the query string
@@ -251,6 +252,19 @@ export default class Aggregate extends React.Component {
                     let value = "\'" + query_filters[i].inputtedValue  + "\'";
                     let filter = " " + conj + " " + column + " " + op + " " + value;
                     queryString = queryString + filter;
+                }
+            }
+        }
+
+        if (query_groups.length > 0) {
+            queryString = queryString + ' group by ';
+            for (let i = 0; i <= query_groups.length - 1; i++) {
+                if (i === query_groups.length - 1) {
+                    let group_column = query_groups[i];
+                    queryString = queryString + group_column + " ";
+                } else {
+                    let group_column = query_groups[i];
+                    queryString = queryString + group_column + ", ";
                 }
             }
         }
