@@ -3,7 +3,7 @@ import {CONSTANTS} from "../TableConstants";
 import request from 'superagent';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
-export default class Aggregate extends React.Component {
+export default class NestedAggregate extends React.Component {
 
     constructor(props) {
         super(props);
@@ -18,6 +18,13 @@ export default class Aggregate extends React.Component {
                       aggregateFormStates: [],
                         /*
                             aggregateFormStates[i] = {
+                            selectedColumn: "",
+                            aggregateCondition: "",
+                            };
+                        */
+                      nestedAggregateFormStates: [],
+                        /*
+                            nestedAggregateFormStates[i] = {
                             selectedColumn: "",
                             aggregateCondition: "",
                             };
@@ -164,7 +171,7 @@ export default class Aggregate extends React.Component {
                             }
                         }
                     }
-                    queryString = queryString + table_column + ' ';
+                    queryString = queryString + table_column + ' as innerVal ' + ' ';
                 } else {
                     let table_column = query_columns[i];
                     for (let j = 0; j <= aggregates.length - 1; j++) {
@@ -180,7 +187,7 @@ export default class Aggregate extends React.Component {
                             } else if (condition === "sum") {
                                 table_column = "sum(" + table_column + ")";
                             } else if (condition === "count") {
-                                table_column = "count(" + table_column + ")";
+                                table_column = "count(" + table_column + ' as innerVal ' + ")";
                             }
                         }
                     }
@@ -198,6 +205,50 @@ export default class Aggregate extends React.Component {
         }
         return queryString
       }
+
+      generateNestedAggregate(queryString, nestedAggregateColumns, nestedAggregates) {
+            for (let i = 0; i <= nestedAggregateColumns.length - 1; i++) {
+                if (i === nestedAggregateColumns.length - 1) {
+                    let table_column = nestedAggregateColumns[i];
+                    for (let j = 0; j <= nestedAggregates.length - 1; j++) {
+                        let aggregate = nestedAggregates[j];
+                        let condition = aggregate.aggregateCondition;
+                        if (condition === "avg") {
+                            table_column = "avg(" + table_column + ")";
+                        } else if (condition === "min") {
+                            table_column = "min(" + table_column + ")";
+                        } else if (condition === "max") {
+                            table_column = "max(" + table_column + ")";
+                        } else if (condition === "sum") {
+                            table_column = "sum(" + table_column + ")";
+                        } else if (condition === "count") {
+                            table_column = "count(" + table_column + ")";
+                        }
+                    }
+                    queryString = queryString + table_column + ' ';
+                } else {
+                    let table_column = nestedAggregateColumns[i];
+                    for (let j = 0; j <= nestedAggregates.length - 1; j++) {
+                        let aggregate = nestedAggregates[j];
+                        let condition = aggregate.aggregateCondition;
+                        if (condition === "avg") {
+                            table_column = "avg(" + table_column + ")";
+                        } else if (condition === "min") {
+                            table_column = "min(" + table_column + ")";
+                        } else if (condition === "max") {
+                            table_column = "max(" + table_column + ")";
+                        } else if (condition === "sum") {
+                            table_column = "sum(" + table_column + ")";
+                        } else if (condition === "count") {
+                            table_column = "count(" + table_column + ")";
+                        }
+                    }
+                    queryString = queryString + table_column + ', ';
+                }
+            }
+            return queryString
+      }
+
       // #######################################################################################
     
       handleSubmit(event) {
@@ -207,10 +258,16 @@ export default class Aggregate extends React.Component {
         let query_filters = this.state.whereFormStates;
         let query_joins = this.state.joinOptions.selected;
         let query_groups = this.state.selectedGroups.selected;
+        let nestedAggregates = this.state.nestedAggregateFormStates;
         let queryString = 'select ';
+        let nestedAggregateColumns = ["cond.innerVal"];
 
-        // Generate the SELECT part of the query string
-        if (query_columns.length > 0) {
+        // Generate the nested aggregate part first
+        if (nestedAggregates.length > 0) {
+            queryString = this.generateNestedAggregate(queryString, nestedAggregateColumns, nestedAggregates);
+            queryString = queryString + 'from (select ';
+            queryString = this.generateSelectQueryString(queryString, query_columns,aggregates);
+        } else if (query_columns.length > 0) {
             queryString = this.generateSelectQueryString(queryString, query_columns,aggregates);
         }
         // Generate the "FROM" part of the query string
@@ -268,7 +325,11 @@ export default class Aggregate extends React.Component {
             }
         }
         // Append ending of query
-        queryString = queryString + ";";
+        if (nestedAggregates.length > 0) {
+            queryString = queryString + ") as cond;";
+        } else {
+            queryString = queryString + ";";
+        }
         console.log(queryString);
         // Make the post request
         let that = this;
@@ -431,15 +492,17 @@ export default class Aggregate extends React.Component {
     }
 
     // Aggregation handlers
+    // #############################################################################################
 
     createAggregationOption(event) {
         let newAggregateForm = this.state.aggregateFormStates;
         let conjunction = event.target.value;
         let i = newAggregateForm.length;
+        let selectedColumns = this.state.selectedColumns.selected;
 
         newAggregateForm[i] = {
-            selectedColumn: "",
-            aggregateCondition: ""
+            selectedColumn: selectedColumns[0],
+            aggregateCondition: "avg"
         };
 
         this.setState({aggregateFormStates: newAggregateForm});
@@ -488,6 +551,67 @@ export default class Aggregate extends React.Component {
         this.setState({aggregateFormStates: forms});
     }
 
+    // Functions for the nested aggregation options
+    // #############################################################################################
+    createNestedAggregationOption(event) {
+        let newAggregateForm = this.state.nestedAggregateFormStates;
+        let conjunction = event.target.value;
+        let i = newAggregateForm.length;
+        let selectedColumns = this.state.selectedColumns.selected;
+
+        newAggregateForm[i] = {
+            selectedColumn: selectedColumns[0],
+            aggregateCondition: "avg"
+        };
+
+        this.setState({nestedAggregateFormStates: newAggregateForm});
+    }
+
+    handleNestedAggregateStates(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let formStates = this.state.nestedAggregateFormStates;
+        let state = formStates[id];
+
+        state.aggregateCondition = value;
+
+        formStates[id] = state;
+
+        this.setState({nestedAggregateFormStates: formStates});
+    }
+
+    handleNestedAggregateChanges(event) {
+        let value = event.target.value;
+        let id = event.target.id;
+        let formStates = this.state.nestedAggregateFormStates;
+        let state = formStates[id];
+
+        state.selectedColumn = value;
+        this.setState({nestedAggregateFormStates: formStates});
+
+    }
+
+    createNestedAggregationColumns() {
+
+        let items = [];
+        let columns = this.state.selectedColumns.selected;
+
+        for (let i = 0; i <= columns.length - 1; i++) {             
+            items.push(<option key={i} value={columns[i]}>{columns[i]}</option>);   
+        }
+
+       return items;
+    }
+
+    deleteNestedAggregateOption(event) {
+        let forms = this.state.nestedAggregateFormStates;
+        let id = event.target.id;
+        forms.splice(id, 1);
+        this.setState({nestedAggregateFormStates: forms});
+    }
+    // #############################################################################################
+
+    // Pop-up modal which shows the query
     toggle() {
         this.setState({
           modal: !this.state.modal
@@ -526,9 +650,6 @@ export default class Aggregate extends React.Component {
         }
         return items;
       }
-
-
-
     
       render() {
         const button = this.state.whereFormStates.length > 0 ? (
@@ -597,7 +718,6 @@ export default class Aggregate extends React.Component {
                         Add Aggregation</Button>
                     }
             <br/>
-            <br/>
             {join_list.length > 0 &&
             <label>
               <header>Please select the join condition:</header>
@@ -613,11 +733,11 @@ export default class Aggregate extends React.Component {
             {this.state.whereFormStates.map((formState, i) => (
                 <div className="whereClauses" id={i}>
                     <div>{formState.conjunction}</div>
-                    <select id={i} value={formState.selectedColumn}
+                    <select key={i} id={i} value={formState.selectedColumn}
                             onChange={this.handleWhereColumnChanges.bind(this)}>
                         {this.createColumnOptions()}
                     </select>
-                    <select id={i} value={formState.selectedCondition}
+                    <select value={formState.selectedCondition}
                             onChange={this.handleWhereColumnStates.bind(this)}>
                         <option key="lt" value="<">Less</option>
                         <option key="gt" value=">">Greater</option>
@@ -641,6 +761,34 @@ export default class Aggregate extends React.Component {
               </select>
             </label>
             }
+            <br/>
+            {this.state.selectedColumns.selected.length > 0 && <h5> Please Select a Nested Aggregate Option: </h5>}
+            {this.state.nestedAggregateFormStates.length > 0 &&
+                <label>
+                {this.state.nestedAggregateFormStates.map((formState, i) => (
+                    <div className="nestedAggregateClasses" id={i}>
+                        <select id={i} value={formState.aggregateCondition}
+                                onChange={this.handleNestedAggregateStates.bind(this)}>
+                            <option key="avg" value="avg">AVG</option>
+                            <option key="min" value="min">MIN</option>
+                            <option key="max" value="max">MAX</option>
+                            <option key="sum" value="sum">SUM</option>
+                            <option key="count" value="count">COUNT</option>
+                        </select>
+                        <Button color="danger" type="button" size="sm" value="delete" id={i}
+                           onClick={this.deleteNestedAggregateOption.bind(this)}>Delete
+                        </Button>
+                    </div>))}
+                    <br/>
+                </label>
+                }
+                <br/>
+                {this.state.selectedColumns.selected.length > 0 && 
+                        <Button type="button" color="warning" value="aggregate" onClick={this.createNestedAggregationOption.bind(this)}>
+                        Add Nested Aggregate</Button>
+                    }
+            <br/>
+            <br/>
             <br/>
             {button}
             <Button type="submit" color="success">Generate Query</Button>

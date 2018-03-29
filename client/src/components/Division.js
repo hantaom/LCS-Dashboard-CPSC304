@@ -1,6 +1,5 @@
 import React from "react";
 import {CONSTANTS} from "../TableConstants";
-import TableView from "./TableView";
 import request from "superagent";
 import { Button } from "reactstrap";
 
